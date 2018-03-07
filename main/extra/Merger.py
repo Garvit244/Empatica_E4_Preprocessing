@@ -42,12 +42,3 @@ class MergeOtherSensor:
             output_file.write(str(row[1]) + ',' + str(row[2]) + ',' + str(row[3]) + ',' + str(row[4]) + ',' + str(humidity) +
                               ',' + str(temp) + ',' + str(pressure) + ',' + str(light) + ',' + str(ir_temp) + ',' +
                               str(noise) + '\n')
-
-if __name__ == '__main__':
-    input_e4 = "/home/striker/Downloads/Bige/Merged.csv"
-    input_sensor = "/home/striker/Downloads/March_6_945.csv"
-    output_dir = "/home/striker/Downloads/Bige"
-    columns = "Readable_Time, EDA, TEMP, HR, Humidity, Temperature, Pressure, Light, IR Temperature, Noise\n"
-
-    merge_other = MergeOtherSensor(input_sensor, input_e4, output_dir)
-    merge_other.merger_files(columns)
