@@ -79,7 +79,7 @@ class Merger:
         pd_filtered.to_csv(self.eda_dir_path + '/Filtered_TEMP.csv', columns=['TEMP'], header=None, index=False)
 
 if __name__ == '__main__':
-    eda_dir_path = "/home/striker/Downloads/Francisco"
+    eda_dir_path = "/home/striker/Downloads/Bige"
 
     merge = Merger(eda_dir_path)
     merge.create_E4_pd()
