@@ -19,7 +19,7 @@ class Merger:
         pd_HR = pd.read_csv(self.eda_dir_path + '/HR.csv', header=None)
 
         merged_data = open(self.output_dir_path + '/Merged_EDA.csv', 'w')
-        merged_data.write('Epoc_Time, Readable_Time, EDA, TEMP, HR\n')
+        merged_data.write('Epoc_Time, Readable_Time, EDA, TEMP, HR. Label\n')
 
         EDA_start_time = int(pd_EDA.iloc[0].values[0])
         HR_start_time = int(pd_HR.iloc[0].values[0])
