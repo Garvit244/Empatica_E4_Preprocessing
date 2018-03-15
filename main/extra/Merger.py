@@ -18,7 +18,8 @@ class MergeOtherSensor:
         pd_sensor = pd.read_csv(self.input_sensor_file)
 
         print 'Number of reading before removing redundant reading ', len(pd_sensor)
-        pd_sensor = pd_sensor.groupby(pd_sensor.iloc[:, 0]).mean().reset_index()
+        pd_sensor = pd_sensor.groupby(pd_sensor.iloc[:, 0]).mean()
+        pd_sensor['Time'] = pd_sensor.index
         print 'Number of reading after removing redundant reading ', len(pd_sensor)
 
         for index, row in pd_empatica.iterrows():
@@ -32,13 +33,13 @@ class MergeOtherSensor:
 
             if not sensor_data.empty:
                 sensor_data = sensor_data.values[0]
-                temp = sensor_data[2]
-                humidity = sensor_data[1]
-                pressure = sensor_data[3]
-                light = sensor_data[4]
-                ir_temp = sensor_data[5]
-                noise = sensor_data[6]
+                temp = sensor_data[1]
+                humidity = sensor_data[0]
+                pressure = sensor_data[2]
+                light = sensor_data[3]
+                ir_temp = sensor_data[4]
+                noise = sensor_data[5]
 
-            output_file.write(str(row[1]) + ',' + str(row[2]) + ',' + str(row[3]) + ',' + str(row[4]) + ',' + str(humidity) +
+            output_file.write(str(row[0]) + ',' + str(row[1]) + ',' + str(row[2]) + ',' + str(row[3]) + ',' + str(row[4]) + ',' + str(humidity) +
                               ',' + str(temp) + ',' + str(pressure) + ',' + str(light) + ',' + str(ir_temp) + ',' +
                               str(noise) + '\n')

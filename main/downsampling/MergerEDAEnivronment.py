@@ -3,8 +3,9 @@ import numpy as np
 from datetime import datetime, timedelta
 
 class Merger:
-    def __init__(self, eda_dir_path):
+    def __init__(self, eda_dir_path, output_dir_path):
         self.eda_dir_path = eda_dir_path
+        self.output_dir_path = output_dir_path
 
     def convert_date(self, epoc_time, time_zone):
         value = datetime.fromtimestamp(epoc_time)
@@ -17,7 +18,7 @@ class Merger:
         pd_TEMP = pd.read_csv(self.eda_dir_path + '/TEMP.csv', header=None)
         pd_HR = pd.read_csv(self.eda_dir_path + '/HR.csv', header=None)
 
-        merged_data = open(self.eda_dir_path + '/Merged.csv', 'w')
+        merged_data = open(self.output_dir_path + '/Merged_EDA.csv', 'w')
         merged_data.write('Epoc_Time, Readable_Time, EDA, TEMP, HR\n')
 
         EDA_start_time = int(pd_EDA.iloc[0].values[0])
@@ -53,7 +54,7 @@ class Merger:
 
 
     def filtered_data(self):
-        pd_merged = pd.read_csv(self.eda_dir_path + '/Merged.csv')
+        pd_merged = pd.read_csv(self.output_dir_path + '/Merged.csv')
         pd_merged.columns = ["Epoc", "Time", "EDA", "TEMP", "HR"]
         print "Actual Data with Noise ", len(pd_merged)
         pd_noise = pd.read_csv(self.eda_dir_path + '/noise.csv')
@@ -74,6 +75,6 @@ class Merger:
         pd_filtered = pd_filtered.drop_duplicates()
         print 'Total EDA Values ', len(pd_filtered)
 
-        pd_filtered.to_csv(self.eda_dir_path + '/Filtered_data.csv')
-        pd_filtered.to_csv(self.eda_dir_path + '/Filtered_EDA.csv', columns=['EDA'], header=None, index=False)
-        pd_filtered.to_csv(self.eda_dir_path + '/Filtered_TEMP.csv', columns=['TEMP'], header=None, index=False)
+        pd_filtered.to_csv(self.output_dir_path + '/Filtered_data.csv')
+        pd_filtered.to_csv(self.output_dir_path + '/Filtered_EDA.csv', columns=['EDA'], header=None, index=False)
+        pd_filtered.to_csv(self.output_dir_path + '/Filtered_TEMP.csv', columns=['TEMP'], header=None, index=False)
