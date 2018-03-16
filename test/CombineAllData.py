@@ -29,8 +29,3 @@ class Aggregater:
 
         merge_other.add_tags()
         merge_other.addscr_tofile()
-
-if __name__ == '__main__':
-    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei Morning Trips/16_March/Francisco"
-    aggregate = Aggregater(main_dir)
-    aggregate.aggregate_e4_sensor()
