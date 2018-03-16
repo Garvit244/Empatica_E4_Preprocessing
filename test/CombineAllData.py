@@ -2,10 +2,15 @@ from main.downsampling.MergerEDAEnivronment import Merger
 from main.extra.Merger import MergeOtherSensor
 from main.extra.TimeConvertor import TimeZoneConvertor
 import os
+import pandas as pd
 
 class Aggregater:
     def __init__(self, main_dir):
         self.main_dir = main_dir
+
+    def remove_files(self):
+        os.remove(self.main_dir + '/Results/Merged_EDA.csv')
+        os.remove(self.main_dir + '/Results/Combined_Data.csv')
 
     def aggregate_e4_sensor(self):
         output_results = self.main_dir + "/Results"
@@ -29,3 +34,10 @@ class Aggregater:
 
         merge_other.add_tags()
         merge_other.addscr_tofile()
+        merge_other.interpolate()
+
+if __name__ == '__main__':
+    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei Morning Trips/16_March/Francisco"
+    aggregate = Aggregater(main_dir)
+    aggregate.aggregate_e4_sensor()
+    aggregate.remove_files()

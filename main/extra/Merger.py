@@ -46,11 +46,6 @@ class MergeOtherSensor:
                               str(noise) + '\n')
 
 
-        pd_output = pd.read_csv(self.output_dir + '/Combined_Data.csv')
-
-        pd_output = pd_output.fillna(method='ffill')
-        pd_output.to_csv(self.output_dir + '/Combined_Data.csv')
-
     def add_tags(self):
         tag_file = self.main_dir + "/EDA/tags_labeled.csv"
         pd_tags = pd.read_csv(tag_file, header=None)
@@ -61,14 +56,14 @@ class MergeOtherSensor:
         prev_time = 0
 
         for index, row in pd_tags.iterrows():
-            data = pd_A[(prev_time <= pd_A['Epoc_Local']) & (pd_A['Epoc_Local'] < row[0])]
+            data = pd_A[(prev_time <= pd_A['Epoc_Local']) & (pd_A['Epoc_Local'] < (row[0]))]
             data['Tags'] = tag
 
             if not data.empty:
                 pd_result = pd_result.append(data)
 
             tag = row[1]
-            prev_time = row[0]
+            prev_time = (row[0])
 
         data = pd_A[pd_A['Epoc_Local'] >= prev_time]
         data['Tags'] = tag
@@ -112,5 +107,11 @@ class MergeOtherSensor:
 
         data_file['SCR'] = scr_dataframe.values
         data_file['SCR_Count'] = scr_count.values
-        data_file = data_file.drop([u'Unnamed: 0.1', u'Unnamed: 0'], axis=1)
+        data_file = data_file.drop([u'Unnamed: 0'], axis=1)
         data_file.to_csv(self.main_dir + "/Results/Data_w_tags.csv", index= False)
+
+    def interpolate(self):
+        pd_output = pd.read_csv(self.main_dir + '/Results/Data_w_tags.csv')
+
+        pd_output = pd_output.fillna(method='ffill')
+        pd_output.to_csv(self.main_dir + '/Results/Data_w_tags.csv')
