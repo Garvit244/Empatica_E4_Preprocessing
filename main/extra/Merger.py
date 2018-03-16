@@ -2,10 +2,11 @@ import pandas as pd
 from datetime import datetime
 
 class MergeOtherSensor:
-    def __init__(self, input_sensor_file, input_e4_file, output_dir):
+    def __init__(self, input_sensor_file, input_e4_file, output_dir, main_dir):
         self.input_sensor_file = input_sensor_file
         self.input_e4_file = input_e4_file
         self.output_dir = output_dir
+        self.main_dir = main_dir
 
     def string_to_datetime(self, datetime_obj):
         return datetime.strptime(datetime_obj, '%H:%M:%S')
@@ -24,12 +25,12 @@ class MergeOtherSensor:
 
         for index, row in pd_empatica.iterrows():
             sensor_data = pd_sensor[pd_sensor['Time'] == row[1]]
-            temp = -1
-            pressure = -1
-            light = -1
-            ir_temp = -1
-            noise = -1
-            humidity = -1
+            temp = float('nan')
+            pressure = float('nan')
+            light = float('nan')
+            ir_temp = float('nan')
+            noise = float('nan')
+            humidity = float('nan')
 
             if not sensor_data.empty:
                 sensor_data = sensor_data.values[0]
@@ -43,3 +44,73 @@ class MergeOtherSensor:
             output_file.write(str(row[0]) + ',' + str(row[1]) + ',' + str(row[2]) + ',' + str(row[3]) + ',' + str(row[4]) + ',' + str(humidity) +
                               ',' + str(temp) + ',' + str(pressure) + ',' + str(light) + ',' + str(ir_temp) + ',' +
                               str(noise) + '\n')
+
+
+        pd_output = pd.read_csv(self.output_dir + '/Combined_Data.csv')
+
+        pd_output = pd_output.fillna(method='ffill')
+        pd_output.to_csv(self.output_dir + '/Combined_Data.csv')
+
+    def add_tags(self):
+        tag_file = self.main_dir + "/EDA/tags_labeled.csv"
+        pd_tags = pd.read_csv(tag_file, header=None)
+        pd_A = pd.read_csv(self.main_dir + "/Results/Combined_Data.csv")
+
+        pd_result = pd.DataFrame()
+        tag = "None"
+        prev_time = 0
+
+        for index, row in pd_tags.iterrows():
+            data = pd_A[(prev_time <= pd_A['Epoc_Local']) & (pd_A['Epoc_Local'] < row[0])]
+            data['Tags'] = tag
+
+            if not data.empty:
+                pd_result = pd_result.append(data)
+
+            tag = row[1]
+            prev_time = row[0]
+
+        data = pd_A[pd_A['Epoc_Local'] >= prev_time]
+        data['Tags'] = tag
+
+        if not data.empty:
+            pd_result = pd_result.append(data)
+
+        pd_result.to_csv(self.main_dir + "/Results/Data_w_tags.csv")
+
+    def addscr_tofile(self):
+        data_file = pd.read_csv(self.main_dir + "/Results/Data_w_tags.csv")
+        scr_list = pd.read_csv(self.main_dir + "/Results/EDA_matlab_scrlist0.05.csv", header=None)
+        scr_list[0] = scr_list[0].astype(int)
+        scr_list = scr_list.values.tolist()
+        cur_index = 0
+        time_start = data_file.iloc[0][1]
+        scr_time = int(scr_list[cur_index][0] + time_start)
+
+        scr_dataframe = pd.DataFrame()
+        scr_count = pd.DataFrame()
+
+        for index, row in data_file.iterrows():
+            epoc_time = row[1]
+            scr_value = 0
+            count = 0
+
+            if epoc_time == scr_time:
+                scr_value = scr_list[cur_index][1]
+                cur_index += 1
+
+                while cur_index < len(scr_list)-1:
+                    if scr_list[cur_index][0] != scr_list[cur_index+1][0]:
+                        break
+                    cur_index += 1
+                    count += 1
+
+                scr_time = int(scr_list[cur_index][0] + time_start)
+
+            scr_count = scr_count.append(pd.DataFrame([count]))
+            scr_dataframe = scr_dataframe.append(pd.DataFrame([scr_value]))
+
+        data_file['SCR'] = scr_dataframe.values
+        data_file['SCR_Count'] = scr_count.values
+        data_file = data_file.drop([u'Unnamed: 0.1', u'Unnamed: 0'], axis=1)
+        data_file.to_csv(self.main_dir + "/Results/Data_w_tags.csv", index= False)
