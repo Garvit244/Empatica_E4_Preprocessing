@@ -21,7 +21,7 @@ class Aggregater:
         eda_dir_path = self.main_dir + "/EDA"
         merge = Merger(eda_dir_path, output_results)
         merge.create_E4_pd()
-        #
+
         converted_sensor = self.main_dir + "/SENSG/converted-sensor.csv"
         input_sensor = self.main_dir + "/SENSG/sensor_data.csv"
         zone_convertor = TimeZoneConvertor(input_sensor, converted_sensor)
@@ -35,7 +35,8 @@ class Aggregater:
         merge_other.add_tags()
         merge_other.addscr_tofile()
         merge_other.interpolate()
-        merge_other.add_peaks_tofile()
+        merge_other.add_peaks_tofile("Data_w_tags.csv")
+        merge_other.add_peaks_tofile("Interpolated_Data_w_tags.csv")
 
 
 
