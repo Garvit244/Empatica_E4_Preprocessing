@@ -100,7 +100,8 @@ class MergeOtherSensor:
                     cur_index += 1
                     count += 1
 
-                scr_time = int(scr_list[cur_index][0] + time_start)
+                if cur_index < len(scr_list) -1:
+                    scr_time = int(scr_list[cur_index][0] + time_start)
 
             scr_count = scr_count.append(pd.DataFrame([count]))
             scr_dataframe = scr_dataframe.append(pd.DataFrame([scr_value]))
@@ -114,7 +115,7 @@ class MergeOtherSensor:
         pd_output = pd.read_csv(self.main_dir + '/Results/Data_w_tags.csv')
 
         pd_output = pd_output.fillna(method='ffill')
-        pd_output.to_csv(self.main_dir + '/Results/Interpolated_Data_w_tags.csv')
+        pd_output.to_csv(self.main_dir + '/Results/Interpolated_Data_w_tags.csv', index= False)
 
 
     def add_peaks_tofile(self, file_name):
