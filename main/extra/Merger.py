@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime
-
+import  time
 class MergeOtherSensor:
     def __init__(self, input_sensor_file, input_e4_file, output_dir, main_dir):
         self.input_sensor_file = input_sensor_file
@@ -75,7 +75,7 @@ class MergeOtherSensor:
 
     def addscr_tofile(self):
         data_file = pd.read_csv(self.main_dir + "/Results/Data_w_tags.csv")
-        scr_list = pd.read_csv(self.main_dir + "/Results/EDA_matlab_scrlist0.05.csv", header=None)
+        scr_list = pd.read_csv(self.main_dir + "/Results/SCR.csv", header=None)
         scr_list[0] = scr_list[0].astype(int)
         scr_list = scr_list.values.tolist()
         cur_index = 0
@@ -114,4 +114,12 @@ class MergeOtherSensor:
         pd_output = pd.read_csv(self.main_dir + '/Results/Data_w_tags.csv')
 
         pd_output = pd_output.fillna(method='ffill')
-        pd_output.to_csv(self.main_dir + '/Results/Data_w_tags.csv')
+        pd_output.to_csv(self.main_dir + '/Results/Interpolated_Data_w_tags.csv')
+
+
+    def add_peaks_tofile(self):
+        peak_file = pd.read_csv(self.main_dir + "/Results/Peaks_0.01.csv")
+        peak_file.columns = ['EDA_Time', 'EDA_PEAK', 'Rise_Time', 'Max_Deriv', 'Ampl', 'Decay_Time', 'SCR_width', 'AUC']
+        peak_file['EDA_Time'] = peak_file['EDA_Time'].astype(datetime)
+        datetime.strptime(peak_file['EDA_Time'][0], '%Y-%m-%d %H:%M:%S')
+        print peak_file

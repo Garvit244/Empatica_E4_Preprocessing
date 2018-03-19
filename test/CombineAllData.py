@@ -21,7 +21,7 @@ class Aggregater:
         eda_dir_path = self.main_dir + "/EDA"
         merge = Merger(eda_dir_path, output_results)
         merge.create_E4_pd()
-
+        #
         converted_sensor = self.main_dir + "/SENSG/converted-sensor.csv"
         input_sensor = self.main_dir + "/SENSG/sensor_data.csv"
         zone_convertor = TimeZoneConvertor(input_sensor, converted_sensor)
@@ -35,9 +35,16 @@ class Aggregater:
         merge_other.add_tags()
         merge_other.addscr_tofile()
         merge_other.interpolate()
+        merge_other.add_peaks_tofile()
+
+
 
 if __name__ == '__main__':
-    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei Morning Trips/16_March/Francisco"
+    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/19_March/Francisco"
+    scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
+    scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
+
     aggregate = Aggregater(main_dir)
     aggregate.aggregate_e4_sensor()
     aggregate.remove_files()
+
