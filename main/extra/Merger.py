@@ -100,6 +100,7 @@ class MergeOtherSensor:
                     cur_index += 1
                     count += 1
 
+                count += 1
                 if cur_index < len(scr_list) -1:
                     scr_time = int(scr_list[cur_index][0] + time_start)
 

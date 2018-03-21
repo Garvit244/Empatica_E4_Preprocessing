@@ -41,9 +41,9 @@ class Aggregater:
 
 
 if __name__ == '__main__':
-    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/15_March/Francisco"
-    scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
-    scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
+    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/14_March/Francisco"
+    # scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
+    # scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
 
     aggregate = Aggregater(main_dir)
     aggregate.aggregate_e4_sensor()
