@@ -5,12 +5,12 @@ from main.extra.Interpolate import Interpolate
 
 
 class Feature_generation():
-    def __init__(self, input_dir, gps_dir):
-        self.input_dir = input_dir
-        self.gps_dir = gps_dir
+    def __init__(self, input_path, gps_path):
+        self.input_path = input_path
+        self.gps_path = gps_path
 
     def statistical_env_feature(self):
-        pd_data = pd.read_csv(self.input_dir + '/Interpolated_Data_w_tags.csv')
+        pd_data = pd.read_csv(self.input_path)
         tags = pd_data.iloc[:, 11].unique()
 
         mean_humidity_df = pd.DataFrame()
@@ -79,23 +79,14 @@ class Feature_generation():
         pd_data['Segment_Std_Noise'] = std_noise_df.values
 
         pd_data['Scr_Per_Segment'] = count_scr_segment_df.values
-        pd_data.to_csv(self.input_dir + "/Interpolated_Data_w_tags.csv", index=False)
+        pd_data.to_csv(self.input_path, index=False)
 
 
-    def add_walking_features(self):
-        gps_file = self.gps_dir + '/GPS.csv'
-        columns = ['Epoc_Local', 'Time', 'E4_EDA',  'E4_TEMP', 'E4_HR',
-         'Humidity', 'Temperature', 'Pressure', 'Light',
-         'IR Temperature', 'Noise', 'Tags', 'SCR', 'SCR_Count',
-         'EDA_Peak', 'Rise_Time', 'Max_Deriv', 'Ampl', 'Decay_Time',
-         'SCR_width', 'AUC', 'Segment_Mean_Temp', 'Segment_Std_Temp',
-         'Segment_Mean_Humi', 'Segment_Std_Humi', 'Segment_Mean_Pressure',
-         'Segment_Std_Pressure', 'Segment_Mean_Light', 'Segment_Std_Light',
-         'Segment_Mean_Noise', 'Segment_Std_Noise', 'Scr_Per_Segment']
+    def add_walking_features(self, columns):
+        gps_file = self.gps_path + '/GPS.csv'
+        pd_data = pd.read_csv(self.input_path, names=columns)
 
-        pd_data = pd.read_csv(self.input_dir + '/Interpolated_Data_w_tags.csv', names=columns)
-
-        if os.path.exists(file_path):
+        if os.path.exists(self.gps_path):
             pd_gps = pd.read_csv(gps_file)
             new_pd = pd_gps[['Time', 'Speed', 'Lat', 'Lng']]
             time_df = new_pd['Time'].values
@@ -111,22 +102,4 @@ class Feature_generation():
             merged_df = pd_data.set_index('Time').join(new_pd.set_index('Time'))
             merged_df = merged_df[1:]
             print len(merged_df), len(pd_data)
-            merged_df.to_csv(self.input_dir + "/Interpolated_Data_w_tags.csv")
-
-
-if __name__ == '__main__':
-    dates = ['14_March', '15_March', '16_March', '17_March', '19_March']
-    # dates = ['20_March']
-    column_names = ['Speed', 'Lng', 'Lat']
-    
-    for date_val in dates:
-        print date_val
-        file_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/Results'
-        gps_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/GPS'
-        f = Feature_generation(file_path, gps_path)
-        # f.statistical_env_feature()
-        # f.add_walking_features()
-
-        interpolate = Interpolate(file_path + "/Interpolated_Data_w_tags.csv", column_names)
-        interpolate.interpolate()
-
+            merged_df.to_csv(self.input_path)
