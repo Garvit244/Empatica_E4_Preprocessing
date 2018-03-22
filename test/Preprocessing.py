@@ -2,7 +2,6 @@ from main.downsampling.MergerEDAEnivronment import Merger
 from main.extra.Merger import MergeOtherSensor
 from main.extra.TimeConvertor import TimeZoneConvertor
 import os
-import pandas as pd
 
 class Aggregater:
     def __init__(self, main_dir):

@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+from main.extra.Interpolate import Interpolate
+
+
 class Feature_generation():
     def __init__(self, input_dir, gps_dir):
         self.input_dir = input_dir
@@ -39,7 +42,7 @@ class Feature_generation():
             std_light = tag_dataframe.iloc[:, 8].std()
             std_noise = tag_dataframe.iloc[:, 10].std()
 
-            count_scr = len(tag_dataframe.iloc[:,12].nonzero()[0])
+            count_scr = len(tag_dataframe.iloc[:,13].nonzero()[0])
 
             for index in range(len(tag_dataframe)):
                 mean_humidity_df = mean_humidity_df.append(pd.DataFrame([mean_humidity]))
@@ -108,15 +111,22 @@ class Feature_generation():
             merged_df = pd_data.set_index('Time').join(new_pd.set_index('Time'))
             merged_df = merged_df[1:]
             print len(merged_df), len(pd_data)
-            merged_df.to_csv(self.input_dir + "/Interpolated_All_Data_w_tags.csv", index=False)
+            merged_df.to_csv(self.input_dir + "/Interpolated_Data_w_tags.csv")
 
 
 if __name__ == '__main__':
     dates = ['14_March', '15_March', '16_March', '17_March', '19_March']
+    # dates = ['20_March']
+    column_names = ['Speed', 'Lng', 'Lat']
+    
     for date_val in dates:
         print date_val
         file_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/Results'
         gps_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/GPS'
         f = Feature_generation(file_path, gps_path)
         # f.statistical_env_feature()
-        f.add_walking_features()
+        # f.add_walking_features()
+
+        interpolate = Interpolate(file_path + "/Interpolated_Data_w_tags.csv", column_names)
+        interpolate.interpolate()
+
