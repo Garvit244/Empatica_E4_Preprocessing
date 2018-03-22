@@ -1,8 +1,10 @@
 import pandas as pd
+import os
 
 class Feature_generation():
-    def __init__(self, input_dir):
+    def __init__(self, input_dir, gps_dir):
         self.input_dir = input_dir
+        self.gps_dir = gps_dir
 
     def statistical_env_feature(self):
         pd_data = pd.read_csv(self.input_dir + '/Interpolated_Data_w_tags.csv')
@@ -77,6 +79,44 @@ class Feature_generation():
         pd_data.to_csv(self.input_dir + "/Interpolated_Data_w_tags.csv", index=False)
 
 
+    def add_walking_features(self):
+        gps_file = self.gps_dir + '/GPS.csv'
+        columns = ['Epoc_Local', 'Time', 'E4_EDA',  'E4_TEMP', 'E4_HR',
+         'Humidity', 'Temperature', 'Pressure', 'Light',
+         'IR Temperature', 'Noise', 'Tags', 'SCR', 'SCR_Count',
+         'EDA_Peak', 'Rise_Time', 'Max_Deriv', 'Ampl', 'Decay_Time',
+         'SCR_width', 'AUC', 'Segment_Mean_Temp', 'Segment_Std_Temp',
+         'Segment_Mean_Humi', 'Segment_Std_Humi', 'Segment_Mean_Pressure',
+         'Segment_Std_Pressure', 'Segment_Mean_Light', 'Segment_Std_Light',
+         'Segment_Mean_Noise', 'Segment_Std_Noise', 'Scr_Per_Segment']
+
+        pd_data = pd.read_csv(self.input_dir + '/Interpolated_Data_w_tags.csv', names=columns)
+
+        if os.path.exists(file_path):
+            pd_gps = pd.read_csv(gps_file)
+            new_pd = pd_gps[['Time', 'Speed', 'Lat', 'Lng']]
+            time_df = new_pd['Time'].values
+            time_series = pd.DataFrame()
+
+            for time in time_df:
+                new_time = time.split('T')[1].split('.')[0]
+                time_series = time_series.append(pd.DataFrame([new_time]))
+
+            new_pd = new_pd.drop(['Time'], axis=1)
+            new_pd['Time'] = time_series.values
+
+            merged_df = pd_data.set_index('Time').join(new_pd.set_index('Time'))
+            merged_df = merged_df[1:]
+            print len(merged_df), len(pd_data)
+            merged_df.to_csv(self.input_dir + "/Interpolated_All_Data_w_tags.csv", index=False)
+
+
 if __name__ == '__main__':
-    f = Feature_generation('/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/20_March/Francisco/Results')
-    f.statistical_env_feature()
+    dates = ['14_March', '15_March', '16_March', '17_March', '19_March']
+    for date_val in dates:
+        print date_val
+        file_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/Results'
+        gps_path = '/home/striker/Dropbox/NSE_2018_e4/Simei_Morning_Trips/' + date_val + '/Francisco/GPS'
+        f = Feature_generation(file_path, gps_path)
+        # f.statistical_env_feature()
+        f.add_walking_features()
