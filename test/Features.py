@@ -1,6 +1,7 @@
 from main.extra.Feature_generation import Feature_generation
 from main.extra.Interpolate import Interpolate
 
+
 class Features:
     def generate_feature(self):
         dates = ['14_March', '15_March', '16_March', '17_March', '19_March']
@@ -26,6 +27,7 @@ class Features:
 
             interpolate = Interpolate(file_path, column_names)
             interpolate.interpolate()
+
 
 if __name__ == '__main__':
     Features().generate_feature()
