@@ -3,12 +3,13 @@ from scipy import stats
 import matplotlib.pyplot as plt
 
 class Annova:
-    def __init__(self, pd_data):
+    def __init__(self, pd_data, directory):
         self.pd_data = pd_data
+        self.directory = directory
 
     def plot(self, variable, grouping):
         self.pd_data.boxplot(variable, by=grouping, figsize=(12, 8))
-        plt.savefig('/home/striker/Documents/Empatica_E4_Preprocessing/figures/' + variable + '.png')
+        plt.savefig(self.directory + variable + '.png')
 
 
     def anova(self, variable, grouping):

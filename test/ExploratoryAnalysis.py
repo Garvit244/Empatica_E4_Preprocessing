@@ -2,6 +2,7 @@ from main.EDA.Annova import Annova
 import pandas as pd
 
 if __name__ == '__main__':
+    directory = '/home/striker/Documents/Empatica_E4_Preprocessing/figures/'
     dates = ['16_March', '17_March', '19_March', '20_March']
 
     pd_total = pd.DataFrame()
@@ -24,6 +25,6 @@ if __name__ == '__main__':
 
     variables = ['Noise', 'Humidity','Temperature', 'Pressure', 'Light', 'IR Temperature']
     for variable in variables:
-        annova = Annova(pd_total)
+        annova = Annova(pd_total, directory)
         annova.anova(variable, 'Tags')
         annova.plot(variable, 'Tags')
