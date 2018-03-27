@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn import preprocessing
+
+from main.models.Features_Selection import Features
 from main.models.Regression_Models import Regression_Models
 
 if __name__ == '__main__':
@@ -26,11 +28,15 @@ if __name__ == '__main__':
         pd_total = pd_total.append(pd_a, ignore_index=True)
 
     pd_total = pd_total[pd_total.SCR != 0]
+    pd_total = pd_total.dropna(subset=['Speed'])
 
-    features = ['EDA_Peak', 'Rise_Time', 'Max_Deriv', 'Ampl', 'Decay_Time', 'SCR_width', 'AUC',
+    features = ['Noise', 'Humidity','Temperature', 'Pressure', 'Light', 'IR Temperature',
                               'Segment_Mean_Temp', 'Segment_Std_Temp', 'Segment_Mean_Humi', 'Segment_Std_Humi',
                               'Segment_Mean_Pressure','Segment_Std_Pressure', 'Segment_Mean_Light', 'Segment_Std_Light',
-                              'Segment_Mean_Noise', 'Segment_Std_Noise', 'Scr_Per_Segment']
+                              'Segment_Mean_Noise', 'Segment_Std_Noise', 'Scr_Per_Segment', 'Speed']
 
-    regression = Regression_Models(pd_total)
-    regression.linerar_regression(target='SCR', features=features)
+
+    # regression = Regression_Models(pd_total)
+    features_selection = Features(pd_total)
+    features_selection.RFECV_feature_selection(target='SCR', features=features)
+    # regression.linerar_regression(target='SCR', features=features)

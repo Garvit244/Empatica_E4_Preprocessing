@@ -1,6 +1,5 @@
 import statsmodels.api as sm
 
-
 class Regression_Models:
     def __init__(self, pd_data):
         self.pd_data = pd_data
@@ -10,8 +9,8 @@ class Regression_Models:
         y = self.pd_data[target]
         x = self.pd_data[features]
 
-        logit = sm.Logit(y, x)
-        result = logit.fit()
+        linear = sm.OLS(y, x)
+        result = linear.fit()
         print result.summary()
 
 
