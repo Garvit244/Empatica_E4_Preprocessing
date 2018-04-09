@@ -11,8 +11,8 @@ class MergeOtherSensor:
     def string_to_datetime(self, datetime_obj):
         return datetime.strptime(datetime_obj, '%H:%M:%S')
 
-    def merger_files(self, columns):
-        output_file = open(self.output_dir + '/Combined_Data.csv', 'w')
+    def merger_files(self, columns, file_name):
+        output_file = open(self.output_dir + file_name, 'w')
         output_file.write(columns)
 
         pd_empatica = pd.read_csv(self.input_e4_file)
@@ -46,10 +46,10 @@ class MergeOtherSensor:
                               str(noise) + '\n')
 
 
-    def add_tags(self):
+    def add_tags(self, file_name, output_file):
         tag_file = self.main_dir + "/EDA/tags_labeled.csv"
         pd_tags = pd.read_csv(tag_file, header=None)
-        pd_A = pd.read_csv(self.main_dir + "/Results/Combined_Data.csv")
+        pd_A = pd.read_csv(self.main_dir + "/Results"+ file_name)
 
         pd_result = pd.DataFrame()
         tag = "None"
@@ -71,10 +71,10 @@ class MergeOtherSensor:
         if not data.empty:
             pd_result = pd_result.append(data)
 
-        pd_result.to_csv(self.main_dir + "/Results/Data_w_tags.csv")
+        pd_result.to_csv(self.main_dir + "/Results" + output_file)
 
-    def addscr_tofile(self):
-        data_file = pd.read_csv(self.main_dir + "/Results/Data_w_tags.csv")
+    def addscr_tofile(self, tag_file):
+        data_file = pd.read_csv(self.main_dir + "/Results" + tag_file)
         scr_list = pd.read_csv(self.main_dir + "/Results/SCR.csv", header=None)
         scr_list[0] = scr_list[0].astype(int)
         scr_list = scr_list.values.tolist()
@@ -110,13 +110,13 @@ class MergeOtherSensor:
         data_file['SCR'] = scr_dataframe.values
         data_file['SCR_Count'] = scr_count.values
         data_file = data_file.drop([u'Unnamed: 0'], axis=1)
-        data_file.to_csv(self.main_dir + "/Results/Data_w_tags.csv", index= False)
+        data_file.to_csv(self.main_dir + "/Results" + tag_file, index= False)
 
-    def interpolate(self):
-        pd_output = pd.read_csv(self.main_dir + '/Results/Data_w_tags.csv')
+    def interpolate(self, tag_file, interpolated_file):
+        pd_output = pd.read_csv(self.main_dir + '/Results' + tag_file)
 
         pd_output = pd_output.fillna(method='ffill')
-        pd_output.to_csv(self.main_dir + '/Results/Interpolated_Data_w_tags.csv', index= False)
+        pd_output.to_csv(self.main_dir + '/Results' + interpolated_file, index= False)
 
 
     def add_peaks_tofile(self, file_name):
@@ -133,7 +133,7 @@ class MergeOtherSensor:
         peak_file = peak_file.drop(['EDA_Time'], axis=1)
         peak_file['Peak_Time'] = mapped_time.values
 
-        data_file = pd.read_csv(self.main_dir + "/Results/" + file_name)
+        data_file = pd.read_csv(self.main_dir + "/Results" + file_name)
 
         EDA_PEAK_df = pd.DataFrame()
         Rise_Time_df = pd.DataFrame()
@@ -179,4 +179,4 @@ class MergeOtherSensor:
         data_file['SCR_width'] = SCR_width_df.values
         data_file['AUC'] = AUC_df.values
 
-        data_file.to_csv(self.main_dir + "/Results/" + file_name, index=False)
+        data_file.to_csv(self.main_dir + "/Results" + file_name, index=False)

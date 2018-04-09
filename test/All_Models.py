@@ -30,7 +30,7 @@ if __name__ == '__main__':
     pd_total = pd_total[pd_total.SCR != 0]
     pd_total = pd_total.dropna(subset=['Speed'])
 
-    features = ['Noise', 'Humidity','Temperature', 'Pressure', 'Light', 'IR Temperature',
+    features = ['Humidity', 'Light',
                               'Segment_Mean_Temp', 'Segment_Std_Temp', 'Segment_Mean_Humi', 'Segment_Std_Humi',
                               'Segment_Mean_Pressure','Segment_Std_Pressure', 'Segment_Mean_Light', 'Segment_Std_Light',
                               'Segment_Mean_Noise', 'Segment_Std_Noise', 'Scr_Per_Segment', 'Speed']
@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
     # regression = Regression_Models(pd_total)
     features_selection = Features(pd_total)
-    features_selection.RFECV_feature_selection(target='SCR', features=features)
+    support = features_selection.RFECV_feature_selection(target='SCR', features=features)
     # regression.linerar_regression(target='SCR', features=features)

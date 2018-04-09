@@ -21,7 +21,8 @@ class Annova:
             data = self.pd_data[self.pd_data[grouping] == group][variable]
             group_data.append([data])
 
-        F, p = stats.f_oneway(group_data[0][0], group_data[1][0], group_data[2][0], group_data[3][0], group_data[4][0])
-        KF, Kp = stats.kruskal(group_data[0][0], group_data[1][0], group_data[2][0], group_data[3][0], group_data[4][0])
+        F, p = stats.f_oneway(group_data[0][0], group_data[1][0], group_data[2][0], group_data[3][0])
+        KF, Kp = stats.kruskal(group_data[0][0], group_data[1][0], group_data[2][0], group_data[3][0])
 
         print  "Anova P-measure ", p, " Kruska P-measure ", Kp
+        return p, Kp

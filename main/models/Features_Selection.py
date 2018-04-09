@@ -1,4 +1,4 @@
-from sklearn.feature_selection import RFECV
+from sklearn.feature_selection import RFE
 from sklearn.svm import SVR
 from sklearn.feature_selection import VarianceThreshold
 
@@ -19,7 +19,11 @@ class Features:
 
         logreg = SVR(kernel='linear')
 
-        rfe = RFECV(logreg, 10)
+        rfe = RFE(logreg, 6)
         rfe = rfe.fit(x, y)
-        print(rfe.support_)
-        print(rfe.ranking_)
+        # print logreg.fit(x, y)
+        # print logreg.score(x, y)
+        print rfe.support_
+        print rfe.ranking_
+        print rfe.estimator_
+        return rfe.support_

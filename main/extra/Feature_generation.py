@@ -83,7 +83,7 @@ class Feature_generation():
 
 
     def add_walking_features(self, columns):
-        gps_file = self.gps_path + '/GPS.csv'
+        gps_file = self.gps_path
         pd_data = pd.read_csv(self.input_path, names=columns)
 
         if os.path.exists(self.gps_path):
