@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 
 from main.extra.Interpolate import Interpolate
@@ -103,3 +104,52 @@ class Feature_generation():
             merged_df = merged_df[1:]
             print len(merged_df), len(pd_data)
             merged_df.to_csv(self.input_path)
+
+    def generate_stats(self, data):
+        avg = data.mean()
+        std = data.std()
+        minimum = data.min()
+        maximum = data.max()
+
+        return avg, std, minimum, maximum
+
+    def add_stastical_features(self, window, output_path):
+        pd_data = pd.read_csv(self.input_path)
+
+        pd_output = pd.DataFrame()
+        for index, row in pd_data.iterrows():
+            scr_value = row['SCR']
+            tag = row['Tags']
+            if float(scr_value) != 0.0:
+                print scr_value
+                if index < (window/2):
+                    data = pd_data.iloc[index:index + (window / 2) + 1, :21]
+                else:
+                    data = pd_data.iloc[index-(window/2):index + (window / 2) + 1, :21]
+
+
+                corresponding_reading = pd_data.iloc[index, :5]
+                avg, std, minimum, maximum = self.generate_stats(data[['Humidity', 'Temperature', 'Pressure',
+                                                                       'Noise', 'Light', 'IR Temperature',
+                                                                       'Rise_Time', 'Max_Deriv', 'Ampl',
+                                                                       'Decay_Time', 'SCR_width', 'AUC']])
+                number_scr = data['SCR_Count'].sum()
+                number_of_peak = data[data['EDA_Peak'] != -1].sum()['EDA_Peak']
+                final_series = pd.concat([corresponding_reading, avg, std, minimum, maximum])
+                final_series = final_series.append(pd.Series([scr_value, number_scr, number_of_peak, tag]))
+                calc_data = final_series.to_frame().reset_index().T.iloc[1:, :]
+
+                pd_output = pd_output.append(calc_data)
+
+        pd_output.columns = ['Epoc_Local', 'Readable_Time', 'E4_EDA', 'E4_TEMP', 'E4_HR', 'Avg_Humi', 'Avg_Tem',
+                             'Avg_Pre', 'Avg_Noise', 'Avg_Light', 'Avg_IR', 'Avg_Rise_time', 'Avg_Max_Deriv',
+                             'Avg_Ampl', 'Avg_Decay', 'Avg_SCR_width', 'Avg_AUC', 'STD_Humi', 'STD_Tem','STD_Pre',
+                             'STD_Noise', 'STD_Light', 'STD_IR', 'STD_Rise_time', 'STD_Max_Deriv','STD_Ampl',
+                             'STD_Decay', 'STD_SCR_width', 'STD_AUC', 'MIN_Humi', 'MIN_Tem','MIN_Pre', 'MIN_Noise',
+                             'MIN_Light', 'MIN_IR', 'MIN_Rise_time', 'MIN_Max_Deriv','MIN_Ampl', 'MIN_Decay',
+                             'MIN_SCR_width', 'MIN_AUC','MAX_Humi', 'MAX_Tem','MAX_Pre', 'MAX_Noise', 'MAX_Light',
+                             'MAX_IR', 'MAX_Rise_time', 'MAX_Max_Deriv','MAX_Ampl', 'MAX_Decay', 'MAX_SCR_width',
+                             'MAX_AUC', 'SCR_Value', 'SCR_Count', 'Peak_Count', 'Tag']
+
+        pd_output.to_csv(output_path, index=False)
+

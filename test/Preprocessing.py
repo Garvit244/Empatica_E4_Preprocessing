@@ -1,4 +1,5 @@
 from main.downsampling.MergerEDAEnivronment import Merger
+from main.extra.Feature_generation import Feature_generation
 from main.extra.Features import Features
 from main.extra.Merger import MergeOtherSensor
 from main.extra.TimeConvertor import TimeZoneConvertor
@@ -49,14 +50,14 @@ class Aggregater:
 
 
 if __name__ == '__main__':
-    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Tampines/6_April/Sarah/"
+    main_dir = "/home/striker/Dropbox/NSE_2018_e4/Tampines/6_April/Francesco/"
+    gps_file = main_dir + "/GPS/GPS.csv"
+
     scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
     scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
 
     aggregate = Aggregater(main_dir)
-    numberOfSensor = 1
-
-    gps_file = main_dir + "/GPS/GPS.csv"
+    numberOfSensor = 2
 
     for index in range(1, numberOfSensor+1):
         print index
@@ -67,3 +68,29 @@ if __name__ == '__main__':
 
         Features().generate_feature(main_dir+ "/Results/Interpolated_Data_w_tags_" + str(index) + ".csv", gps_file)
 
+    users = ['Francisco', 'Garvit', 'Sarah', 'Iman', 'Francesco', 'Darshan']
+    for user in users:
+        print "Processing User: ", user
+        directory = '/home/striker/Dropbox/NSE_2018_e4/Tampines/6_April/' + user + '/Results/'
+
+        file_to_use = 0
+        max_rows = float('-inf')
+
+        for file in os.listdir(directory):
+            if file.startswith('Data_w_tags_'):
+                pd_a = pd.read_csv(os.path.join(directory, file))
+                count = pd_a.count().to_dict()[' Noise']
+                if count > max_rows:
+                    max_rows = count
+                    file_to_use = file[-5:][0]
+        print 'Using file Number ', file_to_use
+
+        feature_generation = Feature_generation(directory + '/Interpolated_Data_w_tags_' + str(file_to_use) + ".csv",
+                                                gps_path=gps_file)
+
+        for windows in range(3,6):
+            output_dir = directory + '/Window_Data/'
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
+            feature_generation.add_stastical_features(window=windows, output_path=output_dir+'Data_for_window_' + str(windows) + '.csv')

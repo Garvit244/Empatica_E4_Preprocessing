@@ -8,7 +8,7 @@ if __name__ == '__main__':
     if not os.path.exists(source_dir):
         os.makedirs(source_dir)
 
-    users = ['Francisco', 'Garvit', 'Sarah', 'Iman']
+    users = ['Francisco', 'Garvit', 'Sarah', 'Iman', 'Francesco', 'Darshan']
 
     pd_total = pd.DataFrame()
     pd_participant = pd.DataFrame()
