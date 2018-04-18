@@ -53,20 +53,20 @@ if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Tampines/6_April/Francesco/"
     gps_file = main_dir + "/GPS/GPS.csv"
 
-    scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
-    scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
-
-    aggregate = Aggregater(main_dir)
-    numberOfSensor = 2
-
-    for index in range(1, numberOfSensor+1):
-        print index
-        sensor_file = 'sensor_data_'
-        sensor_file += str(index)
-        aggregate.aggregate_e4_sensor(index, sensor_file)
-        aggregate.remove_files(index)
-
-        Features().generate_feature(main_dir+ "/Results/Interpolated_Data_w_tags_" + str(index) + ".csv", gps_file)
+    # scr_list = pd.read_excel(io = main_dir + "/Results/SCR.xls", sheetname='CDA')
+    # scr_list.to_csv(main_dir + "/Results/SCR.csv", index=False, header=False)
+    #
+    # aggregate = Aggregater(main_dir)
+    # numberOfSensor = 2
+    #
+    # for index in range(1, numberOfSensor+1):
+    #     print index
+    #     sensor_file = 'sensor_data_'
+    #     sensor_file += str(index)
+    #     aggregate.aggregate_e4_sensor(index, sensor_file)
+    #     aggregate.remove_files(index)
+    #
+    #     Features().generate_feature(main_dir+ "/Results/Interpolated_Data_w_tags_" + str(index) + ".csv", gps_file)
 
     users = ['Francisco', 'Garvit', 'Sarah', 'Iman', 'Francesco', 'Darshan']
     for user in users:

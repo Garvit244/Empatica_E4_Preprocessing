@@ -120,12 +120,12 @@ class Feature_generation():
         for index, row in pd_data.iterrows():
             scr_value = row['SCR']
             tag = row['Tags']
+
             if float(scr_value) != 0.0:
-                print scr_value
-                if index < (window/2):
-                    data = pd_data.iloc[index:index + (window / 2) + 1, :21]
+                if index < (window):
+                    data = pd_data.iloc[index:index + (window) + 1, :21]
                 else:
-                    data = pd_data.iloc[index-(window/2):index + (window / 2) + 1, :21]
+                    data = pd_data.iloc[index-(window):index + (window) + 1, :21]
 
 
                 corresponding_reading = pd_data.iloc[index, :5]
@@ -134,7 +134,7 @@ class Feature_generation():
                                                                        'Rise_Time', 'Max_Deriv', 'Ampl',
                                                                        'Decay_Time', 'SCR_width', 'AUC']])
                 number_scr = data['SCR_Count'].sum()
-                number_of_peak = data[data['EDA_Peak'] != -1].sum()['EDA_Peak']
+                number_of_peak = data[data['EDA_Peak'] != -1].mean()['EDA_Peak']
                 final_series = pd.concat([corresponding_reading, avg, std, minimum, maximum])
                 final_series = final_series.append(pd.Series([scr_value, number_scr, number_of_peak, tag]))
                 calc_data = final_series.to_frame().reset_index().T.iloc[1:, :]
