@@ -3,13 +3,17 @@ import re
 
 class FileReader:
     def __init__(self, file_name):
-        self.pd = pd.read_csv(file_name)
+        self.pd = pd.read_csv(file_name, header=None)
 
     def checkValidity(self ,row):
+        count = 0
         for index, value in row.iterrows():
             value = str(value)
             if re.search('[a-zA-Z]+', value).group() != 'Name':
-                return False
+                count += 1
+
+        if count == len(row)-1:
+            return False
         return True
 
     def clean(self):
@@ -37,5 +41,7 @@ class FileReader:
 
         print len(cleaned_df)
 
-f = FileReader("/home/striker/Dropbox/NSE_2018_e4/Experiment/2/kestrel/Heat.csv")
+# f = FileReader("/home/striker/Dropbox/NSE_2018_e4/Experiment/2/kestrel/Heat.csv")
+# f.clean()
+f = FileReader("/home/striker/Dropbox/NSE_2018_e4/Experiment/2/GPS/2018-04-30_091153_participant2.csv")
 f.clean()

@@ -17,25 +17,26 @@ class Aggregater:
 
     def aggregate_e4_sensor(self):
         output_results = self.main_dir + "/Results"
-
-        if not os.path.exists(output_results):
-            os.makedirs(output_results)
-
-        eda_dir_path = self.main_dir + "/EDA"
-        merge = Merger(eda_dir_path, output_results)
-        merge.create_E4_pd()
-
-
         #
-        # converted_sensor = self.main_dir + "/SENSG/converted-sensor_" + str(index) + ".csv"
-        # input_sensor = self.main_dir + "/SENSG/"+  str(sensor_file)+ ".csv"
-        # zone_convertor = TimeZoneConvertor(input_sensor, converted_sensor)
-        # zone_convertor.convert()
+        # if not os.path.exists(output_results):
+        #     os.makedirs(output_results)
         #
-        # columns = "Epoc_Local, Readable_Time, E4_EDA, E4_TEMP, E4_HR, Humidity, Temperature, Pressure, Light, IR Temperature, Noise\n"
-        # input_e4 = output_results + "/Merged_EDA.csv"
-        # merge_other = MergeOtherSensor(converted_sensor, input_e4, output_results, self.main_dir)
-        #
+        # eda_dir_path = self.main_dir + "/EDA"
+        # merge = Merger(eda_dir_path, output_results)
+        # merge.create_E4_pd()
+
+        sensor_dir = self.main_dir + 'kestrel/'
+        sensor_file = ""
+        for file in os.listdir(sensor_dir):
+            if file.endswith('.csv'):
+                sensor_file = file
+
+        if not sensor_file:
+            print "No Sensor File for given user"
+        else:
+            input_e4 = output_results + "/Merged_EDA.csv"
+            merge_other = MergeOtherSensor(sensor_file, input_e4, output_results, self.main_dir)
+
         # intermediate_files = "/Combined_Data_" + str(index) + ".csv"
         # merge_other.merger_files(columns , intermediate_files)
         #
