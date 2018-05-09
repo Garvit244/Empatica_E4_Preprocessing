@@ -17,13 +17,10 @@ class Aggregater:
 
     def aggregate_e4_sensor(self):
         output_results = self.main_dir + "/Results"
-        #
-        # if not os.path.exists(output_results):
-        #     os.makedirs(output_results)
-        #
-        # eda_dir_path = self.main_dir + "/EDA"
-        # merge = Merger(eda_dir_path, output_results)
-        # merge.create_E4_pd()
+
+        eda_dir_path = self.main_dir + "/EDA"
+        merge = Merger(eda_dir_path, output_results)
+        merge.create_E4_pd()
 
         sensor_dir = self.main_dir + 'kestrel/'
         sensor_file = ""
@@ -31,11 +28,17 @@ class Aggregater:
             if file.endswith('.csv'):
                 sensor_file = file
 
+        sensor_file = sensor_dir + sensor_file
+        print sensor_file
         if not sensor_file:
             print "No Sensor File for given user"
         else:
             input_e4 = output_results + "/Merged_EDA.csv"
             merge_other = MergeOtherSensor(sensor_file, input_e4, output_results, self.main_dir)
+            filter_columns = ['FORMATTED DATE_TIME', 'Station Pressure', 'Wind Speed', 'WBGT', 'Heat Stress Index',
+                              'Temperature', 'Relative Humidity']
+            datetime_col = 'FORMATTED DATE_TIME'
+            merge_other.mergeSensorFile(filter_columns, datetime_col)
 
         # intermediate_files = "/Combined_Data_" + str(index) + ".csv"
         # merge_other.merger_files(columns , intermediate_files)
@@ -54,10 +57,10 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['1', '2', '3']
+    participants = ['2', '3']
     for user in participants:
-        if not os.path.exists(main_dir + user + '/Result'):
-            os.makedirs(main_dir + user + '/Result' )
+        if not os.path.exists(main_dir + user + '/Results'):
+            os.makedirs(main_dir + user + '/Results' )
 
         gps_file = main_dir + "/GPS/GPS.csv"
 

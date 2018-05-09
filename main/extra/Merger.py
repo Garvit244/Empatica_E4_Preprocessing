@@ -1,6 +1,8 @@
 import pandas as pd
 from datetime import datetime, timedelta
 import re
+import numpy as np
+
 class MergeOtherSensor:
     def __init__(self, input_sensor_file, input_e4_file, output_dir, main_dir):
         self.input_e4_file = input_e4_file
@@ -22,7 +24,7 @@ class MergeOtherSensor:
             return False
         return True
 
-    def clean(self):
+    def clean(self, columns_filter, date_col):
         columns, cleaned_df = pd.DataFrame(), pd.DataFrame()
         column_find  = False
 
@@ -36,19 +38,24 @@ class MergeOtherSensor:
                 else:
                     if not column_find:
                         cleaned_df = cleaned_df.append(columns.T)
-                        cleaned_df.columns = cleaned_df.iloc[0]
                         cleaned_df = cleaned_df.drop(cleaned_df.index[0])
                         column_find = True
-                        if self.checkValidity(row):
-                            cleaned_df = cleaned_df.append(row.T)
                     else:
                         if self.checkValidity(row):
                             cleaned_df = cleaned_df.append(row.T)
 
-        print cleaned_df
+        cleaned_df.columns = np.array(columns.values).flatten().tolist()
+        cleaned_df[date_col] = pd.DataFrame(pd.to_datetime(cleaned_df[date_col]).view('int64')/pow(10,9)).astype('int')
 
-    def mergeSensorFile(self):
+        return cleaned_df[columns_filter]
+
+    def mergeSensorFile(self, columns_filter, date_col):
         pd_empatica = pd.read_csv(self.input_e4_file)
+        pd_sensor = self.clean(columns_filter, date_col)
+        pd_result = pd_empatica.merge(pd_sensor.rename(columns={date_col: 'Epoc_Time'}), how='left')
+        pd_result.to_csv(self.input_e4_file, index=False)
+
+
     # def add_tags(self, file_name, output_file):
     #     tag_file = self.main_dir + "/EDA/tags_labeled.csv"
     #     pd_tags = pd.read_csv(tag_file, header=None)

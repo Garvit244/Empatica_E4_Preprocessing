@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+
+
 class Merger:
     def __init__(self, eda_dir_path, output_dir_path):
         self.eda_dir_path = eda_dir_path
@@ -48,7 +50,7 @@ class Merger:
             HR = pd_HR.iloc[index].values[0]
             epoc_time = pd_time.iloc[index].values[0]
             readable_time = self.convert_date(epoc_time, time_zone=0)
-
+            epoc_time += 8*60*60
             merged_data.write(str(epoc_time) + ',' + str(readable_time) + ',' + str(EDA_TEMP[0]) + ',' + str(EDA_TEMP[1]) + ',' + str(HR) + '\n')
 
 
