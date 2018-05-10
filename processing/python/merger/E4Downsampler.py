@@ -53,7 +53,6 @@ class Downsampler:
             epoc_time += 8*60*60
             merged_data.write(str(epoc_time) + ',' + str(readable_time) + ',' + str(EDA_TEMP[0]) + ',' + str(EDA_TEMP[1]) + ',' + str(HR) + '\n')
 
-
     def filtered_data(self):
         pd_merged = pd.read_csv(self.output_dir_path + '/Merged.csv')
         pd_merged.columns = ["Epoc", "Time", "EDA", "TEMP", "HR"]

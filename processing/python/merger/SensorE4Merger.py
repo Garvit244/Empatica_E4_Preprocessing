@@ -53,6 +53,7 @@ class SensorE4Merger:
         pd_empatica = pd.read_csv(self.input_e4_file)
         pd_sensor = self.clean(columns_filter, date_col)
         pd_result = pd_empatica.merge(pd_sensor.rename(columns={date_col: 'Epoc_Time'}), how='left')
+        pd_result = pd_result.fillna(method='ffill')
         pd_result.to_csv(self.input_e4_file, index=False)
 
 

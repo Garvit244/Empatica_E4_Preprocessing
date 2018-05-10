@@ -1,5 +1,5 @@
 from main.extra.Feature_generation import Feature_generation
-from main.extra.Interpolate import Interpolate
+from processing.python.common.Interpolate import Interpolate
 
 
 class Features:

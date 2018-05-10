@@ -1,4 +1,4 @@
-from processing.python.locator.FileLocation import File_Location
+from processing.python.common.FileLocation import File_Location
 from processing.python.merger.NoiseGPSMerger import NoiseGPSMerger
 from processing.python.merger.E4Downsampler import Downsampler
 from processing.python.merger.SensorE4Merger import SensorE4Merger
@@ -66,7 +66,7 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['1', '2', '3', '4']
+    participants = ['2', '3', '4']
 
     for user in participants:
         print 'Processing Data for user: ' + user

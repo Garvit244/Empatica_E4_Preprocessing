@@ -1,8 +1,5 @@
 import pandas as pd
-import numpy as np
 import os
-
-from main.extra.Interpolate import Interpolate
 
 
 class Feature_generation():

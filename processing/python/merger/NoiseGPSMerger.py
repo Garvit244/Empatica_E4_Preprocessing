@@ -20,4 +20,5 @@ class NoiseGPSMerger:
 
     def combine(self, pd_a, pd_b, output_file):
         pd_new = pd_b.merge(pd_a.rename(columns={'Time': 'time'}), how='left')
+        pd_new = pd_new.fillna(method='ffill')
         pd_new.to_csv(output_file, index=False)
