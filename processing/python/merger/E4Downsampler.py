@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 
-class Merger:
+class Downsampler:
     def __init__(self, eda_dir_path, output_dir_path):
         self.eda_dir_path = eda_dir_path
         self.output_dir_path = output_dir_path

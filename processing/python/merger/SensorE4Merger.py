@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import re
 import numpy as np
 
-class MergeOtherSensor:
+class SensorE4Merger:
     def __init__(self, input_sensor_file, input_e4_file, output_dir, main_dir):
         self.input_e4_file = input_e4_file
         self.pd = pd.read_csv(input_sensor_file, header=None)
@@ -54,6 +54,7 @@ class MergeOtherSensor:
         pd_sensor = self.clean(columns_filter, date_col)
         pd_result = pd_empatica.merge(pd_sensor.rename(columns={date_col: 'Epoc_Time'}), how='left')
         pd_result.to_csv(self.input_e4_file, index=False)
+
 
 
     # def add_tags(self, file_name, output_file):
