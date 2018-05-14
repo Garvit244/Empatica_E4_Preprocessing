@@ -21,6 +21,7 @@ class Aggregater:
         sensor_dir = self.main_dir + 'kestrel/'
         sensor_file = self.file_locator.get_csv_file(file_dir=sensor_dir)
 
+        tag_file = eda_dir_path + "/tags_labeled.csv"
         if '.csv' not in sensor_file:
             print "No Sensor File for given user"
         else:
@@ -30,6 +31,7 @@ class Aggregater:
                               'Temperature', 'Relative Humidity']
             datetime_col = 'FORMATTED DATE_TIME'
             merge_other.mergeSensorFile(filter_columns, datetime_col)
+            merge_other.add_tags(tag_file)
 
         print 'Done Merging of Sensor and E4'
 
@@ -39,7 +41,8 @@ class Aggregater:
         gps_dir = self.main_dir + 'GPS/'
         gps_file = self.file_locator.get_csv_file(file_dir=gps_dir)
 
-        merger = NoiseGPSMerger()
+        photo_gps = '/home/striker/Dropbox/NSE_2018_e4/Experiment/gps_temporal.csv'
+        merger = NoiseGPSMerger(photo_gps)
         pd_gps, curr_date = pd.DataFrame(), ""
 
         if '.csv' not in gps_file:
@@ -66,7 +69,7 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['2', '3', '4']
+    participants = ['1', '2', '3', '4', '5']
 
     for user in participants:
         print 'Processing Data for user: ' + user
@@ -77,7 +80,7 @@ if __name__ == '__main__':
 
         aggregate = Aggregater(main_dir + user + '/')
 
-        process1 = Process(target=aggregate.aggregate_e4_sensor())
-        process1.start()
+        # process1 = Process(target=aggregate.aggregate_e4_sensor())
+        # process1.start()
         process2 = Process(target=aggregate.aggregate_noise_gps())
         process2.start()

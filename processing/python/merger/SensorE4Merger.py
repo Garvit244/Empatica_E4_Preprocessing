@@ -56,35 +56,32 @@ class SensorE4Merger:
         pd_result = pd_result.fillna(method='ffill')
         pd_result.to_csv(self.input_e4_file, index=False)
 
+    def add_tags(self, tags_file):
+        pd_tags = pd.read_csv(tags_file, header=None)
+        pd_merged = pd.read_csv(self.input_e4_file)
 
+        pd_result = pd.DataFrame()
+        tag = "None"
+        prev_time = 0
 
-    # def add_tags(self, file_name, output_file):
-    #     tag_file = self.main_dir + "/EDA/tags_labeled.csv"
-    #     pd_tags = pd.read_csv(tag_file, header=None)
-    #     pd_A = pd.read_csv(self.main_dir + "/Results"+ file_name)
-    #
-    #     pd_result = pd.DataFrame()
-    #     tag = "None"
-    #     prev_time = 0
-    #
-    #     for index, row in pd_tags.iterrows():
-    #         data = pd_A[(prev_time <= pd_A['Epoc_Local']) & (pd_A['Epoc_Local'] < (row[0]))]
-    #         data['Tags'] = tag
-    #
-    #         if not data.empty:
-    #             pd_result = pd_result.append(data)
-    #
-    #         tag = row[1]
-    #         prev_time = (row[0])
-    #
-    #     data = pd_A[pd_A['Epoc_Local'] >= prev_time]
-    #     data['Tags'] = tag
-    #
-    #     if not data.empty:
-    #         pd_result = pd_result.append(data)
-    #
-    #     pd_result.to_csv(self.main_dir + "/Results" + output_file)
-    #
+        for index, row in pd_tags.iterrows():
+            data = pd_merged[(prev_time <= pd_merged['Epoc_Time']) & (pd_merged['Epoc_Time'] < (row[0] + 8*60*60))]
+            data['Tags'] = tag
+
+            if not data.empty:
+                pd_result = pd_result.append(data)
+
+            tag = row[1]
+            prev_time = (row[0] + 8*60*60)
+
+        data = pd_merged[pd_merged['Epoc_Time'] >= prev_time]
+        data['Tags'] = tag
+
+        if not data.empty:
+            pd_result = pd_result.append(data)
+
+        pd_result.to_csv(self.input_e4_file, index=False)
+
     # def addscr_tofile(self, tag_file):
     #     data_file = pd.read_csv(self.main_dir + "/Results" + tag_file)
     #     scr_list = pd.read_csv(self.main_dir + "/Results/SCR.csv", header=None)

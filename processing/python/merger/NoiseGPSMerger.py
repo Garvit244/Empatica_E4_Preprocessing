@@ -1,10 +1,12 @@
 import pandas as pd
+from haversine import haversine
 
 class NoiseGPSMerger:
+    def __init__(self, gps_photo_map):
+        self.gps_photo_map = gps_photo_map
 
     def get_speed_data(self, gps_file):
-        pd_gps = pd.read_csv(gps_file)
-        pd_gps = pd_gps[['Time', 'Speed', 'Lat', 'Lng']]
+        pd_gps = self.add_photo_id_locationwise(gps_file)
         curr_date = pd.to_datetime(pd_gps['Time']).dt.date[0]
         pd_gps['Time'] = pd.DataFrame(pd.to_datetime(pd_gps['Time']).view('int64') / pow(10, 9)).astype('int')
         pd_gps['Time'] += 8*60*60  # Time is in GMT
@@ -22,3 +24,20 @@ class NoiseGPSMerger:
         pd_new = pd_b.merge(pd_a.rename(columns={'Time': 'time'}), how='left')
         pd_new = pd_new.fillna(method='ffill')
         pd_new.to_csv(output_file, index=False)
+
+    def add_photo_id_locationwise(self, gps_file):
+        pd_gps = pd.read_csv(gps_file)
+        pd_phtoto = pd.read_csv(self.gps_photo_map)
+
+        pd_gps = pd_gps[['Time', 'Speed', 'Lat', 'Lng']]
+        pd_gps['Photo_id'] = 0
+        for index, gps_data in pd_gps.iterrows():
+            distance_map = {}
+
+            for photo_id, photo in pd_phtoto.iterrows():
+                photo_cord = (photo[1], photo[2])
+                gps_cord = (gps_data[2], gps_data[3])
+                distance_map[haversine(gps_cord, photo_cord)] = photo_id
+
+            pd_gps['Photo_id'].iloc[index] = sorted(distance_map.items())[0][1]
+        return pd_gps
