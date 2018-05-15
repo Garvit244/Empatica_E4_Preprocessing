@@ -62,20 +62,23 @@ class SensorE4Merger:
 
         pd_result = pd.DataFrame()
         tag = "None"
+        lap = "Lap 1"
         prev_time = 0
 
         for index, row in pd_tags.iterrows():
             data = pd_merged[(prev_time <= pd_merged['Epoc_Time']) & (pd_merged['Epoc_Time'] < (row[0] + 8*60*60))]
             data['Tags'] = tag
+            data['Lap'] = lap
 
             if not data.empty:
                 pd_result = pd_result.append(data)
 
-            tag = row[1]
+            tag, lap = row[1], row[2]
             prev_time = (row[0] + 8*60*60)
 
         data = pd_merged[pd_merged['Epoc_Time'] >= prev_time]
         data['Tags'] = tag
+        data['Lap'] = lap
 
         if not data.empty:
             pd_result = pd_result.append(data)

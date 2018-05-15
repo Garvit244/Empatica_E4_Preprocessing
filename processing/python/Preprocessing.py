@@ -69,7 +69,7 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['1', '2', '3', '4', '5']
+    participants = ['7']
 
     for user in participants:
         print 'Processing Data for user: ' + user
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
         aggregate = Aggregater(main_dir + user + '/')
 
-        # process1 = Process(target=aggregate.aggregate_e4_sensor())
-        # process1.start()
+        process1 = Process(target=aggregate.aggregate_e4_sensor())
+        process1.start()
         process2 = Process(target=aggregate.aggregate_noise_gps())
         process2.start()
