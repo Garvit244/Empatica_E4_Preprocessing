@@ -30,7 +30,8 @@ class Aggregater:
             filter_columns = ['FORMATTED DATE_TIME', 'Station Pressure', 'Wind Speed', 'WBGT', 'Heat Stress Index',
                               'Temperature', 'Relative Humidity']
             datetime_col = 'FORMATTED DATE_TIME'
-            merge_other.mergeSensorFile(filter_columns, datetime_col)
+            pressure_col = 'Station Pressure'
+            merge_other.mergeSensorFile(filter_columns, datetime_col, pressure_col)
             merge_other.add_tags(tag_file)
 
         print 'Done Merging of Sensor and E4'
@@ -62,6 +63,8 @@ class Aggregater:
         if not pd_noise.empty and not pd_gps.empty:
             output_file = output_results + 'GPSNoiseMerge.csv'
             merger.combine(pd_a=pd_gps, pd_b=pd_noise, output_file=output_file)
+        elif not pd_gps.empty:
+            pd_gps.to_csv(output_results + 'GPSNoiseMerge.csv', index=False)
         else:
             print 'Check if both files are present'
 
@@ -69,7 +72,7 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['7']
+    participants = ['6', '7']
 
     for user in participants:
         print 'Processing Data for user: ' + user

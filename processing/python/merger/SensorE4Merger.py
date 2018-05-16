@@ -24,7 +24,7 @@ class SensorE4Merger:
             return False
         return True
 
-    def clean(self, columns_filter, date_col):
+    def clean(self, columns_filter, date_col, pressure_col):
         columns, cleaned_df = pd.DataFrame(), pd.DataFrame()
         column_find  = False
 
@@ -46,15 +46,17 @@ class SensorE4Merger:
 
         cleaned_df.columns = np.array(columns.values).flatten().tolist()
         cleaned_df[date_col] = pd.DataFrame(pd.to_datetime(cleaned_df[date_col]).view('int64')/pow(10,9)).astype('int')
+        cleaned_df[pressure_col] = cleaned_df[pressure_col].str.replace(',','').astype('float')
 
         return cleaned_df[columns_filter]
 
-    def mergeSensorFile(self, columns_filter, date_col):
+    def mergeSensorFile(self, columns_filter, date_col, pressure_col):
         pd_empatica = pd.read_csv(self.input_e4_file)
-        pd_sensor = self.clean(columns_filter, date_col)
+        pd_sensor = self.clean(columns_filter, date_col, pressure_col)
         pd_result = pd_empatica.merge(pd_sensor.rename(columns={date_col: 'Epoc_Time'}), how='left')
         pd_result = pd_result.fillna(method='ffill')
         pd_result.to_csv(self.input_e4_file, index=False)
+
 
     def add_tags(self, tags_file):
         pd_tags = pd.read_csv(tags_file, header=None)
