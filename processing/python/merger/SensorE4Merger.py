@@ -87,45 +87,23 @@ class SensorE4Merger:
 
         pd_result.to_csv(self.input_e4_file, index=False)
 
-    # def addscr_tofile(self, tag_file):
-    #     data_file = pd.read_csv(self.main_dir + "/Results" + tag_file)
-    #     scr_list = pd.read_csv(self.main_dir + "/Results/SCR.csv", header=None)
-    #     scr_list[0] = scr_list[0].astype(int)
-    #     scr_list = scr_list.values.tolist()
-    #     cur_index = 0
-    #     time_start = data_file.iloc[0][1]
-    #     scr_time = int(scr_list[cur_index][0] + time_start)
-    #
-    #     scr_dataframe = pd.DataFrame()
-    #     scr_count = pd.DataFrame()
-    #
-    #     for index, row in data_file.iterrows():
-    #         epoc_time = row[1]
-    #         scr_value = 0
-    #         count = 0
-    #
-    #         if epoc_time == scr_time:
-    #             scr_value = scr_list[cur_index][1]
-    #             cur_index += 1
-    #
-    #             while cur_index < len(scr_list)-1:
-    #                 if scr_list[cur_index][0] != scr_list[cur_index+1][0]:
-    #                     break
-    #                 cur_index += 1
-    #                 count += 1
-    #
-    #             count += 1
-    #             if cur_index < len(scr_list) -1:
-    #                 scr_time = int(scr_list[cur_index][0] + time_start)
-    #
-    #         scr_count = scr_count.append(pd.DataFrame([count]))
-    #         scr_dataframe = scr_dataframe.append(pd.DataFrame([scr_value]))
-    #
-    #     data_file['SCR'] = scr_dataframe.values
-    #     data_file['SCR_Count'] = scr_count.values
-    #     data_file = data_file.drop([u'Unnamed: 0'], axis=1)
-    #     data_file.to_csv(self.main_dir + "/Results" + tag_file, index= False)
-    #
+    def getStartingTime(self):
+        pd_a = pd.read_csv(self.input_e4_file)
+        return pd_a['Epoc_Time'][0]
+
+    def addscr_tofile(self, scr_file):
+        pd_a = pd.read_csv(self.input_e4_file)
+        start_time = pd_a['Epoc_Time'][0]
+        scr_list = pd.read_excel(scr_file, sheet_name='CDA')
+
+        scr_list["CDA.SCR-Onset"]  = (scr_list["CDA.SCR-Onset"] + start_time).astype('int')
+        scr_mean = scr_list.groupby(['CDA.SCR-Onset'], as_index=False).mean()
+        scr_mean['Count'] = pd.DataFrame(scr_list.groupby(['CDA.SCR-Onset'], as_index=False).size().values)
+
+        pd_result = pd_a.merge(scr_mean.rename(columns={"CDA.SCR-Onset":"Epoc_Time"}), how='left')
+        pd_result = pd_result.fillna(0)
+        pd_result.to_csv(self.input_e4_file, index=False)
+
     # def interpolate(self, tag_file, interpolated_file):
     #     pd_output = pd.read_csv(self.main_dir + '/Results' + tag_file)
     #

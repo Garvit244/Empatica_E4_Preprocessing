@@ -21,6 +21,8 @@ class Aggregater:
         sensor_dir = self.main_dir + 'kestrel/'
         sensor_file = self.file_locator.get_csv_file(file_dir=sensor_dir)
 
+        scr_file = self.file_locator.get_xls_file(file_dir=eda_dir_path)
+
         tag_file = eda_dir_path + "/tags_labeled.csv"
         if '.csv' not in sensor_file:
             print "No Sensor File for given user"
@@ -34,7 +36,13 @@ class Aggregater:
             merge_other.mergeSensorFile(filter_columns, datetime_col, pressure_col)
             merge_other.add_tags(tag_file)
 
+            if '.xls' not in scr_file:
+                print "No SCR file for given user"
+            else:
+                merge_other.addscr_tofile(scr_file)
+
         print 'Done Merging of Sensor and E4'
+
 
     def aggregate_noise_gps(self):
         output_results = self.main_dir + "/Results/"
@@ -72,7 +80,7 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['6', '7']
+    participants = ['2', '3', '4', '5', '6', '7']
 
     for user in participants:
         print 'Processing Data for user: ' + user
@@ -85,5 +93,5 @@ if __name__ == '__main__':
 
         process1 = Process(target=aggregate.aggregate_e4_sensor())
         process1.start()
-        process2 = Process(target=aggregate.aggregate_noise_gps())
-        process2.start()
+        # process2 = Process(target=aggregate.aggregate_noise_gps())
+        # process2.start()
