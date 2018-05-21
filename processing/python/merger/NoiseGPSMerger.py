@@ -37,7 +37,7 @@ class NoiseGPSMerger:
             for photo_id, photo in pd_phtoto.iterrows():
                 photo_cord = (photo[1], photo[2])
                 gps_cord = (gps_data[2], gps_data[3])
-                distance_map[haversine(gps_cord, photo_cord)] = photo_id
+                distance_map[haversine(gps_cord, photo_cord)] = photo_id + 1
 
             pd_gps['Photo_id'].iloc[index] = sorted(distance_map.items())[0][1]
         return pd_gps

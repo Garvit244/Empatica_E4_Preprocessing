@@ -1,3 +1,4 @@
+from processing.python.analysis.ExploratoryAnalysis import Visualize
 from processing.python.common.FileLocation import File_Location
 from processing.python.merger.NoiseGPSMerger import NoiseGPSMerger
 from processing.python.merger.E4Downsampler import Downsampler
@@ -80,8 +81,8 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['2', '3', '4', '5', '6', '7']
-
+    # participants = ['2', '3', '4', '5', '6', '7']
+    participants = ['7']
     for user in participants:
         print 'Processing Data for user: ' + user
         if not os.path.exists(main_dir + user + '/Results'):
@@ -91,7 +92,16 @@ if __name__ == '__main__':
 
         aggregate = Aggregater(main_dir + user + '/')
 
-        process1 = Process(target=aggregate.aggregate_e4_sensor())
-        process1.start()
+        # process1 = Process(target=aggregate.aggregate_e4_sensor())
+        # process1.start()
         # process2 = Process(target=aggregate.aggregate_noise_gps())
         # process2.start()
+
+        input_dir = main_dir + user + "/Results/"
+
+        for lap in ["Lap 1", "Lap 2"]:
+            y1, y2 = "Skin Temp", "Heat_Stress_Index"
+
+            output_file = "Plot_A_" + lap
+            # Visualize(input_dir).twoAxisPlot(y1_label=y1, y2_label=y2, lap=lap, output_file=output_file)
+            Visualize(input_dir).scatterPlot(lap)

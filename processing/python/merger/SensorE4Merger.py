@@ -63,7 +63,7 @@ class SensorE4Merger:
         pd_merged = pd.read_csv(self.input_e4_file)
 
         pd_result = pd.DataFrame()
-        tag = "None"
+        tag = "0"
         lap = "Lap 1"
         prev_time = 0
 
