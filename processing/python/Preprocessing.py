@@ -1,4 +1,5 @@
 from processing.python.analysis.ExploratoryAnalysis import Visualize
+from processing.python.common.FileLoader import FileLoader
 from processing.python.common.FileLocation import File_Location
 from processing.python.merger.NoiseGPSMerger import NoiseGPSMerger
 from processing.python.merger.E4Downsampler import Downsampler
@@ -79,10 +80,40 @@ class Aggregater:
 
         print 'Done Merging of Noise and GPS'
 
+
+    def twoAxisPlotting(self, path):
+        input_dir = path + "/Results/"
+
+        pd_A, pd_B = FileLoader(input_dir).filesDataframe()
+
+        for lap in ["Lap 1", "Lap 2"]:
+            y1, y2 = "SCR", "Heat_Stress_Index"
+
+            output_file = "Plot_B_" + lap + '.png'
+            Visualize(input_dir).twoAxisPlot(pd_A=pd_A, y1_label=y1, y2_label=y2, lap=lap, cut_point=10,
+                                             output_file=output_file)
+
+    def multiClassPlotting(self, path):
+        input_dir = path + "/Results/"
+        f = FileLoader(input_dir)
+        pd_eda, pd_gps = f.filesDataframe()
+        pd_photo = f.loadPhotoFile()
+        pd_gps = pd_gps.merge(pd_photo, on="Photo_id", how="left")
+        pd_eda = pd_eda.merge(pd_gps.rename(columns={"time":"Epoc_Time"}), on="Epoc_Time", how='left')
+
+        for lap in ["Lap 1", "Lap 2"]:
+            y1, y2 = "SCR", "Sky"
+
+            output_file = "Plot_C_" + lap + '.png'
+            Visualize(input_dir).twoAxisPlot(pd_A=pd_eda, y1_label=y1, y2_label=y2, lap=lap, cut_point=10,
+                                             output_file=output_file)
+
+
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    # participants = ['2', '3', '4', '5', '6', '7']
-    participants = ['7']
+    participants = ['3', '4', '5', '6', '7']
+    # participants = ['5']
+
     for user in participants:
         print 'Processing Data for user: ' + user
         if not os.path.exists(main_dir + user + '/Results'):
@@ -97,11 +128,4 @@ if __name__ == '__main__':
         # process2 = Process(target=aggregate.aggregate_noise_gps())
         # process2.start()
 
-        input_dir = main_dir + user + "/Results/"
-
-        for lap in ["Lap 1", "Lap 2"]:
-            y1, y2 = "Skin Temp", "Heat_Stress_Index"
-
-            output_file = "Plot_A_" + lap
-            # Visualize(input_dir).twoAxisPlot(y1_label=y1, y2_label=y2, lap=lap, output_file=output_file)
-            Visualize(input_dir).scatterPlot(lap)
+        aggregate.multiClassPlotting(main_dir+user)

@@ -104,13 +104,6 @@ class SensorE4Merger:
         pd_result = pd_result.fillna(0)
         pd_result.to_csv(self.input_e4_file, index=False)
 
-    # def interpolate(self, tag_file, interpolated_file):
-    #     pd_output = pd.read_csv(self.main_dir + '/Results' + tag_file)
-    #
-    #     pd_output = pd_output.fillna(method='ffill')
-    #     pd_output.to_csv(self.main_dir + '/Results' + interpolated_file, index= False)
-    #
-    #
     # def add_peaks_tofile(self, file_name):
     #     peak_file = pd.read_csv(self.main_dir + "/Results/Peak.csv")
     #     peak_file.columns = ['EDA_Time', 'EDA_PEAK', 'Rise_Time', 'Max_Deriv', 'Ampl', 'Decay_Time', 'SCR_width', 'AUC']
