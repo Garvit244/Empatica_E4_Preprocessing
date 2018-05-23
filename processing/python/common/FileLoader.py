@@ -23,7 +23,6 @@ class FileLoader:
                         "Count"]
 
         pd_gps = pd.read_csv(self.input_dir + "GPSNoiseMerge.csv")
-        # pd_gps.columns = ["Epoc_Time", "Noise", "Speed", "lat", "lon", "Photo_id"]
 
         return pd_eda, pd_gps
 

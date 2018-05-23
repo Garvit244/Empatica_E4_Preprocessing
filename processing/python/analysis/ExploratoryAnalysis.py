@@ -6,7 +6,7 @@ class Visualize:
     def __init__(self, file_dir):
         self.file_dir = file_dir
 
-    def twoAxisPlot(self, pd_A, y1_label, y2_label, lap, cut_point, output_file):
+    def twoAxisPlot(self, pd_A, y1_label, y2_label, colormap, lap, cut_point, output_file):
         pd_A = pd_A[pd_A["Tags"] != 0]
         pd_A = pd_A[pd_A["Lap"] == lap]
         pd_A = pd_A[cut_point:]
@@ -23,7 +23,9 @@ class Visualize:
         ax1.tick_params('y', colors='b')
 
         ax2 = ax1.twinx()
-        ax2.plot(x, y2, 'r-')
+        for index in range(len(y2_label)):
+            ax2.plot(x, pd_A[y2_label[index]], colormap[index]+'--')
+
         ax2.set_ylabel(y2_label, color='r')
         ax2.tick_params('y', colors='r')
 
