@@ -88,7 +88,7 @@ class Aggregater:
 
         for lap in ["Lap 1", "Lap 2"]:
             y1, y2 = "SCR", ["Heat_Stress_Index"]
-            colormap = ['r']
+            colormap = ['b']
             output_file = "Plot_B_" + lap + '.png'
             Visualize(input_dir).twoAxisPlot(pd_A=pd_A, y1_label=y1, y2_label=y2, colormap=colormap,
                                              lap=lap, cut_point=10,
@@ -104,8 +104,8 @@ class Aggregater:
 
         for lap in ["Lap 1", "Lap 2"]:
             y1 = "SCR"
-            y2 = ["Sky", "Building", "Tree"]
-            colormap = ['r', 'C1', 'C2']
+            y2 = ["Sky", "Tree"]
+            colormap = ['b', 'C2']
             output_file = "Plot_C_" + lap + '.png'
             Visualize(input_dir).twoAxisPlot(pd_A=pd_eda, y1_label=y1, y2_label=y2, colormap = colormap,
                                              lap=lap, cut_point=10,
@@ -114,8 +114,8 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    # participants = ['3', '4', '5', '6', '7']
-    participants = ['7']
+    participants = ['3', '4', '5', '6', '7']
+    # participants = ['7']
 
     for user in participants:
         print 'Processing Data for user: ' + user
@@ -131,4 +131,4 @@ if __name__ == '__main__':
         # process2 = Process(target=aggregate.aggregate_noise_gps())
         # process2.start()
 
-        aggregate.twoAxisPlotting(main_dir+user)
+        aggregate.multiClassPlotting(main_dir+user)

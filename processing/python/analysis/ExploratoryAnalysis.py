@@ -13,22 +13,21 @@ class Visualize:
         y1 = pd_A[y1_label]
         y1 = y1.replace(to_replace=0, value=np.nan)
 
-        y2 = pd_A[y2_label]
         x = np.arange(1, len(pd_A)+1, 1)
 
         fig, ax1 = plt.subplots()
-        ax1.plot(x, y1, 'b.')
+        ax1.plot(x, y1, 'C3.',  markersize=3)
         ax1.set_xlabel("Time (s)")
-        ax1.set_ylabel(y1_label, color='b')
-        ax1.tick_params('y', colors='b')
+        ax1.set_ylabel(y1_label, color='C3')
+        ax1.tick_params('y', colors='C3')
 
         ax2 = ax1.twinx()
         for index in range(len(y2_label)):
-            ax2.plot(x, pd_A[y2_label[index]], colormap[index]+'--')
+            ax2.plot(x, pd_A[y2_label[index]], colormap[index]+'-')
 
-        ax2.set_ylabel(y2_label, color='r')
-        ax2.tick_params('y', colors='r')
-
+        ax2.set_ylabel(y2_label, color='k')
+        ax2.tick_params('y', colors='k')
+        ax2.legend()
         fig.tight_layout()
 
         tags = pd_A["Tags"].unique()[1:]
@@ -43,7 +42,7 @@ class Visualize:
             vertical_lines.append(index)
 
         for vertical in vertical_lines:
-            plt.axvline(x=vertical, color='k', linestyle='--')
+            plt.axvline(x=vertical, color='k', linestyle='--', linewidth=0.7)
         plt.axvspan(0, vertical_lines[0], alpha=0.5, color='grey')
 
         if lap == "Lap 2":
