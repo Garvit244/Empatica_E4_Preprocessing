@@ -9,9 +9,11 @@ import pandas as pd
 import os
 
 class Aggregater:
-    def __init__(self, main_dir):
+    def __init__(self, main_dir, minutes, strip):
         self.main_dir = main_dir
         self.file_locator = File_Location()
+        self.minutes = minutes
+        self.strip = strip
 
     def aggregate_e4_sensor(self):
         output_results = self.main_dir + "/Results"
@@ -59,7 +61,7 @@ class Aggregater:
         if '.csv' not in gps_file:
             print "No GPS File found for the given user"
         else:
-            pd_gps, curr_date = merger.get_speed_data(gps_file=gps_file)
+            pd_gps, curr_date = merger.get_speed_data(gps_file=gps_file, minutes=self.minutes)
 
         noise_dir = self.main_dir + 'noise/'
         noise_file = self.file_locator.get_csv_file(noise_dir)
@@ -68,7 +70,7 @@ class Aggregater:
         if '.csv' not in noise_file:
             print "No Noise File found for the given user"
         else:
-            pd_noise = merger.get_noise_data(noise_file=noise_file, date=curr_date)
+            pd_noise = merger.get_noise_data(noise_file=noise_file, date=curr_date, strip = self.strip)
 
         if not pd_noise.empty and not pd_gps.empty:
             output_file = output_results + 'GPSNoiseMerge.csv'
@@ -114,21 +116,23 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['3', '4', '5', '6', '7']
-    # participants = ['7']
+    # participants = ['3', '4', '5', '6', '7', '8', '10']
+    participants = ['9', '10']
+    minutes = [5, 0]
+    strips = [False, True]
 
-    for user in participants:
+    for user, minute, strip in zip(participants, minutes, strips):
         print 'Processing Data for user: ' + user
         if not os.path.exists(main_dir + user + '/Results'):
             os.makedirs(main_dir + user + '/Results' )
 
         gps_file = main_dir + "/GPS/GPS.csv"
 
-        aggregate = Aggregater(main_dir + user + '/')
+        aggregate = Aggregater(main_dir + user + '/', minute, strip)
 
         # process1 = Process(target=aggregate.aggregate_e4_sensor())
         # process1.start()
-        # process2 = Process(target=aggregate.aggregate_noise_gps())
-        # process2.start()
+        process2 = Process(target=aggregate.aggregate_noise_gps())
+        process2.start()
 
-        aggregate.multiClassPlotting(main_dir+user)
+        # aggregate.multiClassPlotting(main_dir+user)

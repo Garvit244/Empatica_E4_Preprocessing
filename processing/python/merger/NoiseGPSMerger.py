@@ -5,25 +5,38 @@ class NoiseGPSMerger:
     def __init__(self, gps_photo_map):
         self.gps_photo_map = gps_photo_map
 
-    def get_speed_data(self, gps_file):
+
+    def removeMinutes(self, pd_a, minutes):
+        return pd_a - pd.Timedelta(minutes=minutes)
+
+
+    def get_speed_data(self, gps_file, minutes):
         pd_gps = self.add_photo_id_locationwise(gps_file)
         curr_date = pd.to_datetime(pd_gps['Time']).dt.date[0]
-        pd_gps['Time'] = pd.DataFrame(pd.to_datetime(pd_gps['Time']).view('int64') / pow(10, 9)).astype('int')
+        pd_gps['Time'] = pd.DataFrame(self.removeMinutes(pd.to_datetime(pd_gps['Time']), minutes).view('int64') /
+                                      pow(10, 9)).astype('int')
         pd_gps['Time'] += 8*60*60  # Time is in GMT
         return pd_gps, curr_date
 
-    def get_noise_data(self, noise_file, date):
+
+    def get_noise_data(self, noise_file, date, strip):
         pd_noise = pd.read_csv(noise_file)
-        pd_noise['time'] = pd.DataFrame(pd_noise['time'].str[:-4])
+        if strip:
+            pd_noise['time'] = pd.DataFrame(pd_noise['time'].str[:-4])
+        else:
+            pd_noise['time'] = pd.DataFrame(pd_noise['time'])
+
         pd_noise['time'] = pd.DataFrame(pd.to_datetime(str(date) + ' ' + pd_noise['time'].astype('str')).view('int64')
                                         / pow(10, 9)).astype('int')
         pd_noise =  pd_noise.groupby('time', as_index=False).mean()
         return pd_noise
 
+
     def combine(self, pd_a, pd_b, output_file):
         pd_new = pd_b.merge(pd_a.rename(columns={'Time': 'time'}), how='left')
         pd_new = pd_new.fillna(method='ffill')
         pd_new.to_csv(output_file, index=False)
+
 
     def add_photo_id_locationwise(self, gps_file):
         pd_gps = pd.read_csv(gps_file)
