@@ -89,9 +89,9 @@ class Aggregater:
         pd_A, pd_B = FileLoader(input_dir).filesDataframe()
 
         for lap in ["Lap 1", "Lap 2"]:
-            y1, y2 = "SCR", ["Heat_Stress_Index"]
+            y1, y2 = "Skin Temp", ["Heat_Stress_Index"]
             colormap = ['b']
-            output_file = "Plot_B_" + lap + '.png'
+            output_file = "Plot_A_" + lap + '.png'
             Visualize(input_dir).twoAxisPlot(pd_A=pd_A, y1_label=y1, y2_label=y2, colormap=colormap,
                                              lap=lap, cut_point=10,
                                              output_file=output_file)
@@ -116,11 +116,13 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    # participants = ['3', '4', '5', '6', '7', '8', '10']
-    participants = ['9', '10']
-    minutes = [5, 0]
-    strips = [False, True]
+    # participants = ['3', '4', '5', '6', '7']
+    # minutes = [0, 0, 0, 0, 0]
+    # strips = [True, True, True, True, True]
 
+    participants = ['2']
+    minutes = [0]
+    strips = [True]
     for user, minute, strip in zip(participants, minutes, strips):
         print 'Processing Data for user: ' + user
         if not os.path.exists(main_dir + user + '/Results'):
@@ -132,7 +134,7 @@ if __name__ == '__main__':
 
         # process1 = Process(target=aggregate.aggregate_e4_sensor())
         # process1.start()
-        process2 = Process(target=aggregate.aggregate_noise_gps())
-        process2.start()
+        # # process2 = Process(target=aggregate.aggregate_noise_gps())
+        # # process2.start()
 
-        # aggregate.multiClassPlotting(main_dir+user)
+        aggregate.twoAxisPlotting(main_dir+user)

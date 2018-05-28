@@ -19,6 +19,7 @@ class FileLoader:
                         "Humidity",
                         "Tags",
                         "Lap",
+                        "Valid",
                         "SCR",
                         "Count"]
 

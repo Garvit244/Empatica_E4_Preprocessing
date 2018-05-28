@@ -66,6 +66,7 @@ class SensorE4Merger:
         tag = "0"
         lap = "Lap 1"
         prev_time = 0
+        valid = 0
 
         for index, row in pd_tags.iterrows():
             data = pd_merged[(prev_time <= pd_merged['Epoc_Time']) & (pd_merged['Epoc_Time'] < (row[0] + 8*60*60))]
@@ -84,6 +85,18 @@ class SensorE4Merger:
 
         if not data.empty:
             pd_result = pd_result.append(data)
+
+        pd_result["Valid"] = 0
+        firstPark = pd_result[pd_result["Tags"] == 11].index[0]
+        secondPark = pd_result[pd_result["Tags"] == 21].index[0]
+        firstEnd = pd_result[pd_result["Tags"] == 14].index[-1]
+        lastEnd = pd_result[pd_result["Tags"] == 24].index[-1]
+
+        pd_result["Valid"].iloc[firstPark:firstPark+15] = 1
+        pd_result["Valid"].iloc[secondPark:secondPark+15] = 1
+
+        pd_result["Valid"].iloc[firstEnd-15:firstEnd] = 1
+        pd_result["Valid"].iloc[lastEnd-15:lastEnd] = 1
 
         pd_result.to_csv(self.input_e4_file, index=False)
 

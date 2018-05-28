@@ -16,7 +16,9 @@ class Visualize:
         x = np.arange(1, len(pd_A)+1, 1)
 
         fig, ax1 = plt.subplots()
+        # ax1.plot(x, y1, 'C3-')
         ax1.plot(x, y1, 'C3.',  markersize=3)
+
         ax1.set_xlabel("Time (s)")
         ax1.set_ylabel(y1_label, color='C3')
         ax1.tick_params('y', colors='C3')
