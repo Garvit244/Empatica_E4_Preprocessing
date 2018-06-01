@@ -1,10 +1,10 @@
 import pandas as pd
 from haversine import haversine
+from main.shapefiles.area_composition import AreaComposition
 
 class NoiseGPSMerger:
     def __init__(self, gps_photo_map):
         self.gps_photo_map = gps_photo_map
-
 
     def removeMinutes(self, pd_a, minutes):
         return pd_a - pd.Timedelta(minutes=minutes)
@@ -53,4 +53,41 @@ class NoiseGPSMerger:
                 distance_map[haversine(gps_cord, photo_cord)] = photo_id + 1
 
             pd_gps['Photo_id'].iloc[index] = sorted(distance_map.items())[0][1]
+
+        pd_gps = self.add_area_composition(pd_gps)
         return pd_gps
+
+
+    def add_area_composition(self, pd_A):
+        residential = []
+        park = []
+        road = []
+
+        for buffer in [10, 20]:
+            for index, row in pd_A.iterrows():
+                area = AreaComposition((row['Lng'], row['Lat']))
+                composition = area.get_area_composition(buffer_size=buffer)
+
+                if 'ROAD' in composition:
+                    road.append(composition['ROAD'])
+                else:
+                    road.append(0)
+
+                if 'RESIDENTIAL' in composition:
+                    residential.append(composition['RESIDENTIAL'])
+                else:
+                    residential.append(0)
+
+                if 'PARK' in composition:
+                    park.append(composition['PARK'])
+                else:
+                    park.append(0)
+
+            pd_A['Residential_comp_' + str(buffer)] = pd.DataFrame([residential]).T
+            pd_A['Park_comp_' + str(buffer)] = pd.DataFrame([park]).T
+            pd_A['Road_comp_' + str(buffer)] = pd.DataFrame([road]).T
+            del residential[:]
+            del park[:]
+            del road[:]
+
+        return pd_A

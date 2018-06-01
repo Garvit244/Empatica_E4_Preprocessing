@@ -10,7 +10,7 @@ class Intersection:
         self.area_type = []
 
     def read_shape(self):
-        for feature in fiona.open(file_path):
+        for feature in fiona.open(self.input_file):
             self.area_type.append(feature['properties']['LU_DESC'])
             self.geoms.append(shape(feature['geometry']))
 
@@ -71,18 +71,31 @@ class CreateBuffer:
         return new_geo
 
 
-file_path = '/home/striker/Dropbox/NSE_2018_e4/Shapes/Tampines_land_use/Tampines_subset_use_of_land.shp'
-intersect = Intersection(file_path)
-intersect.read_shape()
 
-pts = (103.938509, 1.355525)
-c = CreateBuffer(pts)
-new_geo = c.create_buffer(buffere_size=20) # in meters
-areas = intersect.find_intersected_area(new_geo)
+class AreaComposition:
 
-for key, value in areas.iteritems():
-    total_area = 0
-    for geom in value:
-        geometry_proj, crs = c.project_point(geom)
-        total_area += geometry_proj.area
-    print key, total_area # in sq meter
+    def __init__(self, pts):
+        self.pts = pts
+
+    def get_area_composition(self, buffer_size):
+        file_path = '/home/striker/Dropbox/NSE_2018_e4/Shapes/Tampines_land_use/Tampines_subset_use_of_land.shp'
+        intersect = Intersection(file_path)
+        intersect.read_shape()
+
+        c = CreateBuffer(self.pts)
+        new_geo = c.create_buffer(buffere_size=buffer_size) # in meters
+        areas = intersect.find_intersected_area(new_geo)
+
+        area_composition = {}
+        for key, value in areas.iteritems():
+            total_area = 0
+            for geom in value:
+                geometry_proj, crs = c.project_point(geom)
+                total_area += geometry_proj.area
+
+            if key in area_composition:
+                area_composition[key] += total_area
+            else:
+                area_composition[key] = total_area
+
+        return area_composition
