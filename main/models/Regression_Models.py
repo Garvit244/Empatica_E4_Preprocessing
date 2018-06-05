@@ -5,7 +5,6 @@ class Regression_Models:
         self.pd_data = pd_data
 
     def linerar_regression(self, target, features):
-        print self.pd_data
         y = self.pd_data[target]
         x = self.pd_data[features]
 

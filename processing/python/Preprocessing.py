@@ -1,3 +1,5 @@
+from main.models.Features_Selection import Features
+from main.models.Regression_Models import Regression_Models
 from processing.python.analysis.ExploratoryAnalysis import Visualize
 from processing.python.common.FileLoader import FileLoader
 from processing.python.common.FileLocation import File_Location
@@ -5,6 +7,7 @@ from processing.python.merger.NoiseGPSMerger import NoiseGPSMerger
 from processing.python.merger.E4Downsampler import Downsampler
 from processing.python.merger.SensorE4Merger import SensorE4Merger
 from multiprocessing import Process
+from sklearn.preprocessing import MinMaxScaler, Normalizer
 import pandas as pd
 import os
 
@@ -89,9 +92,9 @@ class Aggregater:
         pd_A, pd_B = FileLoader(input_dir).filesDataframe()
 
         for lap in ["Lap 1", "Lap 2"]:
-            y1, y2 = "SCR", ["Heat_Stress_Index"]
+            y1, y2 = "Skin Temp", ["Heat_Stress_Index"]
             colormap = ['b']
-            output_file = "Plot_B_" + lap + '.png'
+            output_file = "Plot_A_" + lap + '.png'
             Visualize(input_dir).twoAxisPlot(pd_A=pd_A, y1_label=y1, y2_label=y2, colormap=colormap,
                                              lap=lap, cut_point=10,
                                              output_file=output_file)
@@ -106,9 +109,9 @@ class Aggregater:
 
         for lap in ["Lap 1", "Lap 2"]:
             y1 = "SCR"
-            y2 = ["Sky", "Tree"]
+            y2 = ["Residential_comp_20", "Park_comp_20"]
             colormap = ['b', 'C2']
-            output_file = "Plot_C_" + lap + '.png'
+            output_file = "Plot_D_" + lap + '.png'
             Visualize(input_dir).twoAxisPlot(pd_A=pd_eda, y1_label=y1, y2_label=y2, colormap = colormap,
                                              lap=lap, cut_point=10,
                                              output_file=output_file)
@@ -116,26 +119,65 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    participants = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-    minutes = [0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
-    strips = [True, True, True, True, True, True, False, True, True, True]
+    # participants = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+    participants = ['3', '4', '6', '7', '8', '9', '10', '11', '12']
+    # minutes = [0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
+    # strips = [True, True, True, True, True, True, False, True, True, True]
     #
-    # participants = ['9']
-    # minutes = [5]
-    # strips = [False]
+    # # participants = ['8', '9', '10', '11', '12']
+    # # minutes = [0, 5, 0, 0, 0]
+    # # strips = [True, False, True, True, True]
+    #
+    # for user, minute, strip in zip(participants, minutes, strips):
+    #     print 'Processing Data for user: ' + user
+    #     if not os.path.exists(main_dir + user + '/Results'):
+    #         os.makedirs(main_dir + user + '/Results' )
+    #
+    #     gps_file = main_dir + "/GPS/GPS.csv"
+    #
+    #     aggregate = Aggregater(main_dir + user + '/', minute, strip)
+    #
+    #     # process1 = Process(target=aggregate.aggregate_e4_sensor())
+    #     # process1.start()
+    #     # process2 = Process(target=aggregate.aggregate_noise_gps())
+    #     # process2.start()
+    #
+    #     aggregate.multiClassPlotting(main_dir+user)
 
-    for user, minute, strip in zip(participants, minutes, strips):
-        print 'Processing Data for user: ' + user
-        if not os.path.exists(main_dir + user + '/Results'):
-            os.makedirs(main_dir + user + '/Results' )
+    scaler = MinMaxScaler()
+    pd_total = pd.DataFrame()
+    for user in participants:
+        output_results = main_dir + user + "/Results/"
+        pd_eda, pd_noise = FileLoader(output_results).filesDataframe()
 
-        gps_file = main_dir + "/GPS/GPS.csv"
+        pd_eda = pd_eda.merge(pd_noise.rename(columns={'time': 'Epoc_Time'}), how='left')
+        pd_eda["SCR"] = pd_eda["SCR"].round(6)
+        scaled_pd = scaler.fit_transform(pd_eda[["EDA", "SCR"]])
+        pd_eda["EDA"] = scaled_pd[:, 0]
+        pd_eda["SCR"] =  scaled_pd[:, 1]
 
-        aggregate = Aggregater(main_dir + user + '/', minute, strip)
+        pd_eda = pd_eda[pd_eda['Tags'] != 0]
+        pd_eda = pd_eda[pd_eda['Tags'] != 10]
+        pd_eda = pd_eda[pd_eda['Tags'] != 20]
+        pd_eda = pd_eda[pd_eda['Tags'] != 30]
 
-        # process1 = Process(target=aggregate.aggregate_e4_sensor())
-        # process1.start()
-        process2 = Process(target=aggregate.aggregate_noise_gps())
-        process2.start()
+        pd_eda = pd_eda.dropna(axis=0)
+        pd_eda = pd_eda[pd_eda['SCR'] != 0]
+        # pd_eda = pd_eda[pd_eda['Lap'] == 'Lap 1']
 
-        # aggregate.twoAxisPlotting(main_dir+user)
+        pd_eda = pd_eda[["SCR", "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity", "Tags",
+                "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10"]]
+        pd_total = pd_total.append(pd_eda)
+
+
+    print len(pd_total)
+
+    regression_model = Regression_Models(pd_total)
+    target = "SCR"
+    features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity", "Tags",
+                "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10"]
+    regression_model.linerar_regression(target=target, features=features)
+
+
+    feature = Features(pd_total)
+    feature.RFECV_feature_selection(target=target, features=features)

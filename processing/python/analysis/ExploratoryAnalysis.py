@@ -29,7 +29,8 @@ class Visualize:
 
         ax2.set_ylabel(y2_label, color='k')
         ax2.tick_params('y', colors='k')
-        ax2.legend()
+        ax2.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
         fig.tight_layout()
 
         tags = pd_A["Tags"].unique()[1:]

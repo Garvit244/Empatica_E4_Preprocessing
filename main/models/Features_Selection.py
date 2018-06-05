@@ -19,7 +19,7 @@ class Features:
 
         logreg = SVR(kernel='linear')
 
-        rfe = RFE(logreg, 6)
+        rfe = RFE(logreg, 4)
         rfe = rfe.fit(x, y)
         # print logreg.fit(x, y)
         # print logreg.score(x, y)

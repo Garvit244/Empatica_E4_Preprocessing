@@ -1,7 +1,7 @@
 import pandas as pd
 
 def find_amplitute(input_dir):
-    users = ['1', '2', '3', '4', '5', '6', '7']
+    users = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
     output_file = input_dir + 'Amplitute.csv'
     output_file_reader = open(output_file, 'w')
 
