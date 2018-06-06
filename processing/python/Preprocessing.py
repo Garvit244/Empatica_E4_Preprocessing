@@ -120,64 +120,25 @@ class Aggregater:
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
     # participants = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-    participants = ['3', '4', '6', '7', '8', '9', '10', '11', '12']
     # minutes = [0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
     # strips = [True, True, True, True, True, True, False, True, True, True]
-    #
-    # # participants = ['8', '9', '10', '11', '12']
-    # # minutes = [0, 5, 0, 0, 0]
-    # # strips = [True, False, True, True, True]
-    #
-    # for user, minute, strip in zip(participants, minutes, strips):
-    #     print 'Processing Data for user: ' + user
-    #     if not os.path.exists(main_dir + user + '/Results'):
-    #         os.makedirs(main_dir + user + '/Results' )
-    #
-    #     gps_file = main_dir + "/GPS/GPS.csv"
-    #
-    #     aggregate = Aggregater(main_dir + user + '/', minute, strip)
-    #
-    #     # process1 = Process(target=aggregate.aggregate_e4_sensor())
-    #     # process1.start()
-    #     # process2 = Process(target=aggregate.aggregate_noise_gps())
-    #     # process2.start()
-    #
-    #     aggregate.multiClassPlotting(main_dir+user)
 
-    scaler = MinMaxScaler()
-    pd_total = pd.DataFrame()
-    for user in participants:
-        output_results = main_dir + user + "/Results/"
-        pd_eda, pd_noise = FileLoader(output_results).filesDataframe()
+    participants = ['2']
+    minutes = [0]
+    strips = [True]
 
-        pd_eda = pd_eda.merge(pd_noise.rename(columns={'time': 'Epoc_Time'}), how='left')
-        pd_eda["SCR"] = pd_eda["SCR"].round(6)
-        scaled_pd = scaler.fit_transform(pd_eda[["EDA", "SCR"]])
-        pd_eda["EDA"] = scaled_pd[:, 0]
-        pd_eda["SCR"] =  scaled_pd[:, 1]
+    for user, minute, strip in zip(participants, minutes, strips):
+        print 'Processing Data for user: ' + user
+        if not os.path.exists(main_dir + user + '/Results'):
+            os.makedirs(main_dir + user + '/Results' )
 
-        pd_eda = pd_eda[pd_eda['Tags'] != 0]
-        pd_eda = pd_eda[pd_eda['Tags'] != 10]
-        pd_eda = pd_eda[pd_eda['Tags'] != 20]
-        pd_eda = pd_eda[pd_eda['Tags'] != 30]
+        gps_file = main_dir + "/GPS/GPS.csv"
 
-        pd_eda = pd_eda.dropna(axis=0)
-        pd_eda = pd_eda[pd_eda['SCR'] != 0]
-        # pd_eda = pd_eda[pd_eda['Lap'] == 'Lap 1']
+        aggregate = Aggregater(main_dir + user + '/', minute, strip)
 
-        pd_eda = pd_eda[["SCR", "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity", "Tags",
-                "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10"]]
-        pd_total = pd_total.append(pd_eda)
+        process1 = Process(target=aggregate.aggregate_e4_sensor())
+        process1.start()
+        process2 = Process(target=aggregate.aggregate_noise_gps())
+        process2.start()
 
-
-    print len(pd_total)
-
-    regression_model = Regression_Models(pd_total)
-    target = "SCR"
-    features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity", "Tags",
-                "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10"]
-    regression_model.linerar_regression(target=target, features=features)
-
-
-    feature = Features(pd_total)
-    feature.RFECV_feature_selection(target=target, features=features)
+        aggregate.multiClassPlotting(main_dir+user)
