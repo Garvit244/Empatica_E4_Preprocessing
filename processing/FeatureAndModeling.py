@@ -3,6 +3,7 @@ import pandas as pd
 
 from main.models.Features_Selection import Features
 from main.models.Regression_Models import Regression_Models
+from main.visualization import visualize_feature
 from processing.python.common.FileLoader import FileLoader
 
 
@@ -64,7 +65,7 @@ class FeatureSelection:
 
         pd_feature = pd_feature.append(pd.DataFrame(features))
 
-        for algo in ['RF', 'LR', 'Ridge', 'SVR']:
+        for algo in ['RF', 'LR', 'Ridge']:
             print "Feature generation using model: ", algo
 
             for lap in ['Lap 1', 'Lap 2']:
@@ -82,6 +83,8 @@ class FeatureSelection:
                         pd_feature[new_col] = importance
 
         pd_feature.to_csv(output_file, index=False)
+        output_file = self.output_dir + '/FeatureImportanceLap1.png'
+        visualize_feature().heatmap(pd_feature, output_file)
 
 if __name__ == '__main__':
     FeatureSelection().featureImportance()
