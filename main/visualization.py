@@ -31,5 +31,6 @@ class visualize_feature:
         ax1.set_yticklabels(pd_A[0], minor=False, rotation='horizontal', size=10)
         plt.ylabel('Features')
 
+        plt.show()
         fig.set_size_inches(500, 600)
         plt.savefig(output_file, dpi=100)

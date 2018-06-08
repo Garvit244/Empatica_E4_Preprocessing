@@ -9,9 +9,12 @@ class Intersection:
         self.geoms = []
         self.area_type = []
 
-    def read_shape(self):
+    def read_shape(self, types):
         for feature in fiona.open(self.input_file):
-            self.area_type.append(feature['properties']['LU_DESC'])
+            if types:
+                self.area_type.append(feature['properties']['LU_DESC'])
+            else:
+                self.area_type.append("Type 1")
             self.geoms.append(shape(feature['geometry']))
 
     def find_area_type(self, coord):
@@ -77,10 +80,10 @@ class AreaComposition:
     def __init__(self, pts):
         self.pts = pts
 
-    def get_area_composition(self, buffer_size):
+    def get_area_composition(self, buffer_size, file_path):
         file_path = '/home/striker/Dropbox/NSE_2018_e4/Shapes/Tampines_land_use/Tampines_subset_use_of_land.shp'
         intersect = Intersection(file_path)
-        intersect.read_shape()
+        intersect.read_shape(True)
 
         c = CreateBuffer(self.pts)
         new_geo = c.create_buffer(buffere_size=buffer_size) # in meters

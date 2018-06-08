@@ -62,11 +62,14 @@ class NoiseGPSMerger:
         residential = []
         park = []
         road = []
+        buildings = []
+        file_path =  '/home/striker/Dropbox/NSE_2018_e4/Shapes/Tampines_land_use/Tampines_subset_use_of_land.shp'
+        building_file = '/home/striker/Dropbox/NSE_2018_e4/Shapes/Buildings/buildings_vector1.shp'
 
         for buffer in [10, 20]:
             for index, row in pd_A.iterrows():
                 area = AreaComposition((row['Lng'], row['Lat']))
-                composition = area.get_area_composition(buffer_size=buffer)
+                composition = area.get_area_composition(buffer_size=buffer, file_path=file_path)
 
                 if 'ROAD' in composition:
                     road.append(composition['ROAD'])
@@ -83,11 +86,22 @@ class NoiseGPSMerger:
                 else:
                     park.append(0)
 
+                building = area.get_area_composition(buffer_size=buffer, file_path=building_file)
+
+                if 'Type 1' in building:
+                    buildings.append(building['Type 1'])
+                else:
+                    buildings.append(0)
+
             pd_A['Residential_comp_' + str(buffer)] = pd.DataFrame([residential]).T
             pd_A['Park_comp_' + str(buffer)] = pd.DataFrame([park]).T
             pd_A['Road_comp_' + str(buffer)] = pd.DataFrame([road]).T
+            pd_A['Buildings_comp_' + str(buffer)] = pd.DataFrame([buildings]).T
+
             del residential[:]
             del park[:]
             del road[:]
+            del  buildings[:]
 
         return pd_A
+

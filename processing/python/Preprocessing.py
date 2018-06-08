@@ -136,9 +136,9 @@ if __name__ == '__main__':
 
         aggregate = Aggregater(main_dir + user + '/', minute, strip)
 
-        process1 = Process(target=aggregate.aggregate_e4_sensor())
-        process1.start()
+        # process1 = Process(target=aggregate.aggregate_e4_sensor())
+        # process1.start()
         process2 = Process(target=aggregate.aggregate_noise_gps())
         process2.start()
 
-        aggregate.multiClassPlotting(main_dir+user)
+        # aggregate.multiClassPlotting(main_dir+user)
