@@ -69,7 +69,7 @@ class NoiseGPSMerger:
         for buffer in [10, 20]:
             for index, row in pd_A.iterrows():
                 area = AreaComposition((row['Lng'], row['Lat']))
-                composition = area.get_area_composition(buffer_size=buffer, file_path=file_path)
+                composition = area.get_area_composition(buffer_size=buffer, file_path=file_path, type=True)
 
                 if 'ROAD' in composition:
                     road.append(composition['ROAD'])
@@ -86,7 +86,7 @@ class NoiseGPSMerger:
                 else:
                     park.append(0)
 
-                building = area.get_area_composition(buffer_size=buffer, file_path=building_file)
+                building = area.get_area_composition(buffer_size=buffer, file_path=building_file, type=False)
 
                 if 'Type 1' in building:
                     buildings.append(building['Type 1'])

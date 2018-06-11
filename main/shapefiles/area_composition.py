@@ -80,10 +80,9 @@ class AreaComposition:
     def __init__(self, pts):
         self.pts = pts
 
-    def get_area_composition(self, buffer_size, file_path):
-        file_path = '/home/striker/Dropbox/NSE_2018_e4/Shapes/Tampines_land_use/Tampines_subset_use_of_land.shp'
+    def get_area_composition(self, buffer_size, file_path, type):
         intersect = Intersection(file_path)
-        intersect.read_shape(True)
+        intersect.read_shape(type)
 
         c = CreateBuffer(self.pts)
         new_geo = c.create_buffer(buffere_size=buffer_size) # in meters

@@ -119,13 +119,13 @@ class Aggregater:
 
 if __name__ == '__main__':
     main_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
-    # participants = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-    # minutes = [0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
-    # strips = [True, True, True, True, True, True, False, True, True, True]
+    participants = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+    minutes = [0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
+    strips = [True, True, True, True, True, True, False, True, True, True]
 
-    participants = ['2']
-    minutes = [0]
-    strips = [True]
+    # participants = ['2']
+    # minutes = [0]
+    # strips = [True]
 
     for user, minute, strip in zip(participants, minutes, strips):
         print 'Processing Data for user: ' + user
