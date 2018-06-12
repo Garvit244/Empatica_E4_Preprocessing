@@ -1,5 +1,5 @@
 from sklearn.feature_selection import RFE
-from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.svm import SVR
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import RandomForestRegressor
@@ -27,12 +27,13 @@ class Features:
             logreg = LinearRegression()
         elif type == "Ridge":
             logreg = Ridge()
+        elif type == 'Lasso':
+            logreg = Lasso()
 
         rfe = RFE(logreg)
         rfe = rfe.fit(x, y)
         # print logreg.fit(x, y)
         # print logreg.score(x, y)
         # print rfe.support_
-        print rfe.ranking_
-        # print rfe.estimator_
-        return rfe.support_
+        # print rfe.ranking_
+        return rfe.ranking_
