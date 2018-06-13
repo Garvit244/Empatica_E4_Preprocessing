@@ -32,7 +32,7 @@ class FeatureSelection:
             pd_eda['participant'] = int(user)
 
             pd_eda = pd_eda.merge(pd_personal, on='participant', how='left')
-            pd_eda["SCR"] = pd_eda["SCR"].round(6)
+            pd_eda["Skin Temp"] = pd_eda["Skin Temp"].round(6)
             pd_eda["Residential_comp_10"] = pd_eda["Residential_comp_10"] / 314
             pd_eda["Park_comp_10"] = pd_eda["Park_comp_10"] / 314
             pd_eda["Road_comp_10"] = pd_eda["Road_comp_10"] / 314
@@ -44,15 +44,15 @@ class FeatureSelection:
 
             pd_eda = pd_eda[pd_eda["Valid"] != 1]
 
-            scaled_pd = scaler.fit_transform(pd_eda[["EDA", "SCR"]])
-            pd_eda["EDA"] = scaled_pd[:, 0]
-            pd_eda["SCR"] = scaled_pd[:, 1]
+            # scaled_pd = scaler.fit_transform(pd_eda[["EDA", "SCR"]])
+            # pd_eda["EDA"] = scaled_pd[:, 0]
+            # pd_eda["SCR"] = scaled_pd[:, 1]
             pd_eda = pd_eda.dropna(axis=0)
 
             pd_eda['live_in_HDB'] = pd_eda['live_in_HDB'].map( {'Yes': 1, 'No': 0})
             pd_eda['first_time_tampines'] = pd_eda['first_time_tampines'].map( {'Yes': 1, 'No': 0})
             pd_eda = pd_eda[
-                ["SCR", "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity",
+                ["Skin Temp", "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity",
                  "Tags",
                  "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10", "Buildings_comp_10",
                  "Clutter", "Sky", "Building", "Tree", "Lap", "participant", "BMI", "live_in_HDB", "PRS_being_away", "PRS_fascination",
@@ -63,13 +63,13 @@ class FeatureSelection:
 
 
     def featureImportance(self):
-        output_file = self.output_dir + '/Feature_Importance.csv'
+        output_file = self.output_dir + '/Feature_Importance_Skin.csv'
         pd_feature = pd.DataFrame()
 
         pd_total = self.mergeData()
-        target = "SCR"
-        features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index",
-                    "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10", "Sky", "Clutter",  "BMI",
+        target = "Skin Temp"
+        features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Buildings_comp_10", "Tree",
+                    "gain", "Speed", "Sky", "Clutter",  "BMI",
                     "live_in_HDB", "PRS_being_away", "PRS_fascination", "PRS_compatibility", "first_time_tampines"]
 
         pd_feature = pd_feature.append(pd.DataFrame(features))
