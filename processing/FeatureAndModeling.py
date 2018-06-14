@@ -14,7 +14,7 @@ class FeatureSelection:
         self.output_dir = "/home/striker/Dropbox/NSE_2018_e4/Experiment/"
         self.personal_char = "/home/striker/Dropbox/NSE_2018_e4/00 - Paper/Data_sets/Personal_characteristics.csv"
 
-    def mergeData(self):
+    def mergeData(self, target):
         participants = ['2', '3', '4', '6', '7', '8', '9', '10', '11', '12']
         pd_personal = pd.read_csv(self.personal_char)
 
@@ -32,7 +32,8 @@ class FeatureSelection:
             pd_eda['participant'] = int(user)
 
             pd_eda = pd_eda.merge(pd_personal, on='participant', how='left')
-            pd_eda["Skin Temp"] = pd_eda["Skin Temp"].round(6)
+            pd_eda[target] = pd_eda[target].round(6)
+
             pd_eda["Residential_comp_10"] = pd_eda["Residential_comp_10"] / 314
             pd_eda["Park_comp_10"] = pd_eda["Park_comp_10"] / 314
             pd_eda["Road_comp_10"] = pd_eda["Road_comp_10"] / 314
@@ -52,7 +53,7 @@ class FeatureSelection:
             pd_eda['live_in_HDB'] = pd_eda['live_in_HDB'].map( {'Yes': 1, 'No': 0})
             pd_eda['first_time_tampines'] = pd_eda['first_time_tampines'].map( {'Yes': 1, 'No': 0})
             pd_eda = pd_eda[
-                ["Skin Temp", "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity",
+                [target, "Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity",
                  "Tags",
                  "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10", "Buildings_comp_10",
                  "Clutter", "Sky", "Building", "Tree", "Lap", "participant", "BMI", "live_in_HDB", "PRS_being_away", "PRS_fascination",
@@ -62,18 +63,21 @@ class FeatureSelection:
         return pd_total
 
 
-    def featureImportance(self):
-        output_file = self.output_dir + '/Feature_Importance_Skin.csv'
+    def featureImportance(self, target):
+        output_file = self.output_dir + '/Feature_Importance' + target + '.csv'
         pd_feature = pd.DataFrame()
 
-        pd_total = self.mergeData()
-        target = "Skin Temp"
-        features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Buildings_comp_10", "Tree",
-                    "gain", "Speed", "Sky", "Clutter",  "BMI",
-                    "live_in_HDB", "PRS_being_away", "PRS_fascination", "PRS_compatibility", "first_time_tampines"]
+        pd_total = self.mergeData(target)
+        target = target
+        features = ["Heat_Stress_Index", "WBGT", "Wind Speed", "Station Pressure", "gain", "Sky", "Tree", "Clutter",
+                    "Buildings_comp_10", "Speed", "BMI",
+                    "PRS_being_away", "PRS_fascination", "PRS_compatibility", "live_in_HDB", "first_time_tampines"]
 
-        pd_feature = pd_feature.append(pd.DataFrame(features))
+        column_name = ["Heat Stress Index", "WBGT", "Wind Speed", "Atm. Pressure", "Noise", "Sky View Factor", "Green spaces",
+                       "Clutter", "Built-up area", "Walking speed", "BMI",
+                    "PRS being away", "PRS fascination", "PRS compatibility", "Living in HDB", "Familirity"]
 
+        pd_feature = pd_feature.append(pd.DataFrame(column_name))
         for algo in ['RF', 'LR', 'Ridge', 'Lasso']:
             print "Feature generation using model: ", algo
 
@@ -92,11 +96,17 @@ class FeatureSelection:
                         pd_feature[new_col] = importance
 
         pd_feature.to_csv(output_file, index=False)
-        # output_file = self.output_dir + '/FeatureImportanceLap1.png'
-        # visualize_feature().heatmap(pd_feature, output_file)
+        self.visualizeFeatures(pd_feature, target)
+
+    def visualizeFeatures(self, pd_A, target):
+        output_file = self.output_dir + 'FeatureImportance_' + target
+
+        for lap in ['Lap 1', 'Lap 2']:
+            output_file = output_file + '_' + lap + '.png'
+            visualize_feature().heatmap(pd_A, output_file, lap)
 
 if __name__ == '__main__':
-    FeatureSelection().featureImportance()
+    FeatureSelection().featureImportance(target="SCR")
 
     # regression_model = Regression_Models(pd_total)
     # target = "SCR"
