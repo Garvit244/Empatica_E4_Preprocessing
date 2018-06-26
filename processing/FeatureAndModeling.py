@@ -69,21 +69,21 @@ class FeatureSelection:
 
         pd_total = self.mergeData(target)
         target = target
-        features = ["Heat_Stress_Index", "WBGT", "Wind Speed", "Station Pressure", "gain", "Sky", "Tree", "Clutter",
-                    "Buildings_comp_10", "Speed", "BMI",
+        features = ["Temperature", "Humidity", "Heat_Stress_Index", "WBGT", "Wind Speed", "gain", "Sky", "Tree",
+                    "Buildings_comp_10", "Speed",
                     "PRS_being_away", "PRS_fascination", "PRS_compatibility", "live_in_HDB", "first_time_tampines"]
 
-        column_name = ["Heat Stress Index", "WBGT", "Wind Speed", "Atm. Pressure", "Noise", "Sky View Factor", "Green spaces",
-                       "Clutter", "Built-up area", "Walking speed", "BMI",
+        column_name = ["Temperature", "Humidity", "Heat Stress Index", "WBGT", "Wind Speed", "Noise", "Sky View Factor", "Green spaces"
+                       , "Built-up area", "Walking speed",
                     "PRS being away", "PRS fascination", "PRS compatibility", "Living in HDB", "Familirity"]
 
         pd_feature = pd_feature.append(pd.DataFrame(column_name))
         for algo in ['RF', 'LR', 'Ridge', 'Lasso']:
             print "Feature generation using model: ", algo
 
-            for lap in ['Lap 1', 'Lap 2']:
+            for lap in ['Lap_1_And_Lap_2']:
                 print "Feature Selection for: ", lap
-                pd_lap = pd_total[pd_total["Lap"] == lap]
+                pd_lap = pd_total
 
                 for section in [11, 12, 13, 14, 21, 22, 23, 24]:
                     pd_section = pd_lap[pd_lap['Tags'] == section]
@@ -101,12 +101,12 @@ class FeatureSelection:
     def visualizeFeatures(self, pd_A, target):
         output_file = self.output_dir + 'FeatureImportance_' + target
 
-        for lap in ['Lap 1', 'Lap 2']:
-            output_file = output_file + '_' + lap + '.png'
-            visualize_feature().heatmap(pd_A, output_file, lap)
+        for lap in ['Lap_1_And_Lap_2']:
+            new_output_file = output_file + '_' + lap + '.png'
+            visualize_feature().heatmap(pd_A, new_output_file, lap)
 
 if __name__ == '__main__':
-    FeatureSelection().featureImportance(target="SCR")
+    FeatureSelection().featureImportance(target="Skin Temp")
 
     # regression_model = Regression_Models(pd_total)
     # target = "SCR"
