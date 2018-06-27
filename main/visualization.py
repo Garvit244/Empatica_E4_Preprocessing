@@ -19,8 +19,10 @@ class visualize_feature:
 
         if lap == "Lap 1":
             segments = ["11", "12", "13", "14"]
-        else:
+        elif lap == "Lap 2":
             segments = ["21", "22", "23", "24"]
+        else:
+            segments = ["(11, 21)", "(12, 22)", "(13, 23)", "(14, 24)"]
 
         for segment in segments:
             new_value = [0]*15

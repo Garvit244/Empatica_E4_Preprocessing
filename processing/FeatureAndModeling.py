@@ -63,8 +63,8 @@ class FeatureSelection:
         return pd_total
 
 
-    def featureImportance(self, target):
-        output_file = self.output_dir + '/Feature_Importance' + target + '.csv'
+    def featureImportance(self, target, sections, filename):
+        output_file = self.output_dir + filename + target + '.csv'
         pd_feature = pd.DataFrame()
 
         pd_total = self.mergeData(target)
@@ -85,8 +85,9 @@ class FeatureSelection:
                 print "Feature Selection for: ", lap
                 pd_lap = pd_total
 
-                for section in [11, 12, 13, 14, 21, 22, 23, 24]:
-                    pd_section = pd_lap[pd_lap['Tags'] == section]
+                for section in sections:
+                    pd_section = pd_lap.loc[(pd_lap['Tags'] == section[0]) | (pd_lap['Tags'] == section[1])]
+
                     print "Computing for sectionnumber: ", str(section), len(pd_section)
 
                     if not pd_section.empty:
@@ -96,24 +97,15 @@ class FeatureSelection:
                         pd_feature[new_col] = importance
 
         pd_feature.to_csv(output_file, index=False)
-        self.visualizeFeatures(pd_feature, target)
+        self.visualizeFeatures(pd_feature, target, filename)
 
-    def visualizeFeatures(self, pd_A, target):
-        output_file = self.output_dir + 'FeatureImportance_' + target
+    def visualizeFeatures(self, pd_A, target, filename):
+        output_file = self.output_dir + filename + target
 
         for lap in ['Lap_1_And_Lap_2']:
             new_output_file = output_file + '_' + lap + '.png'
             visualize_feature().heatmap(pd_A, new_output_file, lap)
 
 if __name__ == '__main__':
-    FeatureSelection().featureImportance(target="Skin Temp")
-
-    # regression_model = Regression_Models(pd_total)
-    # target = "SCR"
-    # features = ["Station Pressure", "Wind Speed", "WBGT", "Heat_Stress_Index", "Temperature", "Humidity", "Tags",
-    #             "Count", "gain", "Speed", "Residential_comp_10", "Park_comp_10", "Road_comp_10"]
-    # regression_model.linerar_regression(target=target, features=features)
-    #
-    #
-    # feature = Features(pd_total)
-    # feature.RFECV_feature_selection(target=target, features=features)
+    sections = [(11, 21), (12, 22), (13, 23), (14, 24)]
+    FeatureSelection().featureImportance(target="SCR", sections=sections, filename='Feature_Importance_combine_')
