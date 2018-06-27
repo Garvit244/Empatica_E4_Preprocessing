@@ -97,14 +97,14 @@ class FeatureSelection:
                         pd_feature[new_col] = importance
 
         pd_feature.to_csv(output_file, index=False)
-        self.visualizeFeatures(pd_feature, target, filename)
+        self.visualizeFeatures(pd_feature, sections=sections, target=target, filename=filename)
 
-    def visualizeFeatures(self, pd_A, target, filename):
+    def visualizeFeatures(self, pd_A, sections, target, filename):
         output_file = self.output_dir + filename + target
 
         for lap in ['Lap_1_And_Lap_2']:
             new_output_file = output_file + '_' + lap + '.png'
-            visualize_feature().heatmap(pd_A, new_output_file, lap)
+            visualize_feature().heatmap(pd_A, segments=sections, output_file=new_output_file, lap=lap)
 
 if __name__ == '__main__':
     sections = [(11, 21), (12, 22), (13, 23), (14, 24)]

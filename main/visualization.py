@@ -12,17 +12,10 @@ class visualize_feature:
         plt.xticks(index, label, fontsize=10, rotation=30)
         plt.show()
 
-    def heatmap(self, pd_A, output_file, lap):
+    def heatmap(self, pd_A, segments, output_file, lap):
         new_pd = pd.DataFrame()
         fig = plt.figure(figsize=(25,15))
         ax1 = fig.add_subplot(111)
-
-        if lap == "Lap 1":
-            segments = ["11", "12", "13", "14"]
-        elif lap == "Lap 2":
-            segments = ["21", "22", "23", "24"]
-        else:
-            segments = ["(11, 21)", "(12, 22)", "(13, 23)", "(14, 24)"]
 
         for segment in segments:
             new_value = [0]*15
@@ -47,8 +40,6 @@ class visualize_feature:
         horizontal_lines = [6, 9]
         for line in horizontal_lines:
             ax1.axhline(line, 0, 1, linewidth=5, c='r')
-
-        # plt.show()
 
         plt.tight_layout()
         plt.savefig(output_file)
